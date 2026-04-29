@@ -237,6 +237,211 @@ const secretLabTree: TreeNode = {
   ]
 };
 
+const mazeTree: TreeNode = {
+  name: 'maze',
+  children: [
+    {
+      name: 'level1',
+      children: [
+        { name: 'room_a', children: [] },
+        { name: 'room_b', children: [] },
+        {
+          name: 'hub',
+          children: [
+            { name: 'north', children: [] },
+            { name: 'south', children: [] },
+            { name: 'east', children: [] },
+            { name: 'west', children: [] }
+          ]
+        }
+      ]
+    },
+    {
+      name: 'level2',
+      children: [
+        {
+          name: 'secret',
+          children: [
+            { name: 'treasure', children: [] },
+            { name: 'decoy', children: [] }
+          ]
+        },
+        { name: 'trap', children: [] }
+      ]
+    },
+    {
+      name: 'level3',
+      children: [
+        {
+          name: 'warp',
+          children: [
+            { name: 'zone_a', children: [] },
+            { name: 'zone_b', children: [] },
+            {
+              name: 'portal',
+              children: [
+                { name: 'exit', children: [] }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+};
+
+const deepSystemTree: TreeNode = {
+  name: 'system',
+  children: [
+    {
+      name: 'root',
+      children: [
+        {
+          name: 'bin',
+          children: [
+            { name: 'core', children: [] },
+            { name: 'utils', children: [] }
+          ]
+        },
+        {
+          name: 'var',
+          children: [
+            {
+              name: 'log',
+              children: [
+                { name: 'apache', children: [] },
+                { name: 'mysql', children: [] },
+                {
+                  name: 'system',
+                  children: [
+                    { name: 'critical', children: [] },
+                    { name: 'debug', children: [] }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          name: 'usr',
+          children: [
+            {
+              name: 'local',
+              children: [
+                {
+                  name: 'share',
+                  children: [
+                    { name: 'documents', children: [] }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+};
+const spyTree: TreeNode = {
+  name: 'agency',
+  children: [
+    {
+      name: 'ops',
+      children: [
+        { name: 'alpha', children: [] },
+        { name: 'bravo', children: [] },
+        {
+          name: 'charlie',
+          children: [
+            { name: 'intel', children: [] },
+            {
+              name: 'classified',
+              children: [
+                { name: 'top_secret', children: [] },
+                { name: 'eyes_only', children: [] }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      name: 'safehouse',
+      children: [
+        {
+          name: 'cache',
+          children: [
+            { name: 'dropbox', children: [] }
+          ]
+        }
+      ]
+    },
+    {
+      name: 'dead_drop',
+      children: [
+        { name: 'package', children: [] }
+      ]
+    }
+  ]
+};
+
+const quantumTree: TreeNode = {
+  name: 'quantum',
+  children: [
+    {
+      name: 'dimension_a',
+      children: [
+        {
+          name: 'reality_1',
+          children: [
+            {
+              name: 'timeline_alpha',
+              children: [
+                { name: 'past', children: [] },
+                { name: 'present', children: [] },
+                { name: 'future', children: [] }
+              ]
+            }
+          ]
+        },
+        {
+          name: 'reality_2',
+          children: [
+            { name: 'alternate', children: [] },
+            {
+              name: 'parallel',
+              children: [
+                { name: 'universe_x', children: [] }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      name: 'dimension_b',
+      children: [
+        {
+          name: 'reality_3',
+          children: [
+            {
+              name: 'timeline_beta',
+              children: [
+                { name: 'quantum_anchor', children: [] }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      name: 'nexus',
+      children: [
+        { name: 'stabilizer', children: [] }
+      ]
+    }
+  ]
+};
 
 /* ============================================================
    LEVEL CONFIGS
@@ -313,5 +518,53 @@ export const LEVELS: LevelConfig[] = [
     allowAbsolute: false,
     hiddenMode: true,
     visibilityRadius: 2,
+  },
+  {
+    id: 7,
+    name: 'The Maze',
+    description: 'Find your way from the hub to the treasure. The maze has many dead ends!',
+    tree: mazeTree,
+    startPath: '/maze/level1/hub',
+    targetPath: '/maze/level2/secret/treasure',
+    maxMoves: 4,
+    allowAbsolute: false,
+    hiddenMode: true,
+    visibilityRadius: 1,
+  },
+  {
+    id: 8,
+    name: 'Deep System Recovery',
+    description: 'Recover the critical logs starting from the documents folder. Use relative paths only!',
+    tree: deepSystemTree,
+    startPath: '/system/root/usr/local/share/documents',
+    targetPath: '/system/root/var/log/system/critical',
+    maxMoves: null,
+    allowAbsolute: false,
+    hiddenMode: false,
+    visibilityRadius: Infinity,
+  },
+  {
+    id: 9,
+    name: 'The Spy Mission',
+    description: 'Escape from the classified eyes_only room to the safehouse dropbox. Maximum security - no absolute paths, limited moves!',
+    tree: spyTree,
+    startPath: '/agency/ops/charlie/classified/eyes_only',
+    targetPath: '/agency/safehouse/cache/dropbox',
+    maxMoves: 6,
+    allowAbsolute: false,
+    hiddenMode: true,
+    visibilityRadius: 1,
+  },
+  {
+    id: 10,
+    name: 'Quantum Leap',
+    description: 'Navigate from the past timeline to the quantum anchor. Extreme difficulty - fog of war, limited visibility, and absolute paths disabled!',
+    tree: quantumTree,
+    startPath: '/quantum/dimension_a/reality_1/timeline_alpha/past',
+    targetPath: '/quantum/dimension_b/reality_3/timeline_beta/quantum_anchor',
+    maxMoves: 5,
+    allowAbsolute: false,
+    hiddenMode: true,
+    visibilityRadius: 1,
   },
 ];

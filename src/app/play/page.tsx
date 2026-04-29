@@ -15,6 +15,7 @@ import { useGameEngine } from '@/hooks/useGameEngine';
 import { useToast } from '@/hooks/useToast';
 import LevelSelector from '@/components/game/LevelSelector';
 import GameBoard from '@/components/game/GameBoard';
+import SidebarTreeView from '@/components/game/SidebarTreeView';
 import HUD from '@/components/game/HUD';
 import PathInput from '@/components/game/PathInput';
 import GameOverlay from '@/components/game/GameOverlay';
@@ -29,6 +30,7 @@ export default function PlayPage() {
   const [showMenu, setShowMenu] = useState(true);
   const [showUpload, setShowUpload] = useState(false);
   const [inputError, setInputError] = useState(false);
+  const [viewMode, setViewMode] = useState<'tree' | 'code'>('tree');
 
   /* Load a level and switch to game view */
   const handleSelectLevel = useCallback(
@@ -169,21 +171,46 @@ export default function PlayPage() {
             maxMoves={state.level.maxMoves}
             allowAbsolute={state.level.allowAbsolute}
             hiddenMode={state.level.hiddenMode}
+            viewMode={viewMode}
+            onToggleView={() => setViewMode((prev) => (prev === 'tree' ? 'code' : 'tree'))}
             onReset={resetLevel}
             onBack={handleBack}
           />
 
-          <GameBoard
-            tree={state.level.tree}
-            currentPath={state.currentPath}
-            targetPath={state.targetPath}
-            displayPath={state.displayPath}
-            visitedPaths={state.visitedPaths}
-            hiddenMode={state.level.hiddenMode}
-            visiblePaths={visiblePaths}
-            celebrating={isWon}
-          />
+          <div className={styles.gameContent}>
+            {viewMode === 'code' && (
+              <SidebarTreeView
+                tree={state.level.tree}
+                currentPath={state.currentPath}
+                targetPath={state.targetPath}
+                visitedPaths={state.visitedPaths}
+                hiddenMode={state.level.hiddenMode}
+                visiblePaths={visiblePaths}
+              />
+            )}
 
+            <div className={styles.boardArea}>
+              <GameBoard
+                tree={state.level.tree}
+                currentPath={state.currentPath}
+                targetPath={state.targetPath}
+                displayPath={state.displayPath}
+                visitedPaths={state.visitedPaths}
+                hiddenMode={state.level.hiddenMode}
+                visiblePaths={visiblePaths}
+                celebrating={isWon}
+              />
+
+              <GameOverlay
+                status={state.status}
+                moveCount={state.moveCount}
+                onRestart={resetLevel}
+                onNextLevel={handleNextLevel}
+                onBack={handleBack}
+                hasNextLevel={hasNextLevel}
+              />
+            </div>
+          </div>
           <PathInput
             currentPath={state.currentPath}
             tree={state.level.tree}
@@ -191,15 +218,6 @@ export default function PlayPage() {
             onPreview={previewMove}
             disabled={isWon || isLost}
             hasError={inputError}
-          />
-
-          <GameOverlay
-            status={state.status}
-            moveCount={state.moveCount}
-            onRestart={resetLevel}
-            onNextLevel={handleNextLevel}
-            onBack={handleBack}
-            hasNextLevel={hasNextLevel}
           />
         </div>
       )}

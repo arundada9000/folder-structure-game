@@ -79,7 +79,7 @@ export default function Player({ targetPath, boardRef, celebrating }: PlayerProp
   return (
     <motion.div
       className={`${styles.player} ${celebrating ? styles.celebrating : ''}`}
-      animate={{ x: pos.x - 14, y: pos.y - 28 }}
+      animate={{ x: pos.x - 18, y: pos.y - 36 }}
       transition={{ type: 'spring', stiffness: 200, damping: 20, mass: 0.8 }}
       style={{ position: 'absolute', top: 0, left: 0 }}
     >

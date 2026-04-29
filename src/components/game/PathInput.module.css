@@ -1,15 +1,36 @@
 .wrapper {
+  position: relative;
   padding: var(--space-md) var(--space-lg);
-  border-top: 1px solid var(--color-border);
-  background: var(--color-bg-secondary);
+  border-top: 1px solid rgba(0, 240, 255, 0.12);
+  background: rgba(11, 9, 20, 0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Scanlines */
+.wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 240, 255, 0.015) 2px,
+    rgba(0, 240, 255, 0.015) 4px
+  );
+  z-index: 0;
 }
 
 .form {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  background: var(--color-bg-primary);
-  border: 1px solid var(--color-border);
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(0, 240, 255, 0.15);
   border-radius: var(--radius-lg);
   padding: var(--space-sm) var(--space-md);
   transition: border-color var(--transition-base), box-shadow var(--transition-base);
@@ -17,7 +38,7 @@
 
 .form:focus-within {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-glow);
+  box-shadow: 0 0 0 2px var(--color-primary-glow), 0 0 20px var(--color-primary-glow);
 }
 
 /* --- Prompt section --- */
@@ -81,6 +102,11 @@
 }
 
 /* --- Autocomplete suggestions dropdown --- */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .suggestions {
   position: absolute;
   bottom: calc(100% + 8px);
@@ -88,15 +114,18 @@
   right: 0;
   max-height: 220px;
   overflow-y: auto;
-  background: var(--color-bg-surface);
-  border: 1px solid var(--color-border);
+  background: rgba(11, 9, 20, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 240, 255, 0.2);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.6), 0 0 16px var(--color-primary-glow);
   z-index: var(--z-overlay);
   padding: var(--space-xs);
   display: flex;
   flex-direction: column;
   gap: 1px;
+  animation: slideUp 0.2s ease-out;
 }
 
 .suggestionItem {
@@ -150,16 +179,19 @@
   justify-content: center;
   width: 32px;
   height: 32px;
-  border: none;
-  background: var(--color-primary);
-  color: var(--color-text-inverse);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  background: rgba(0, 240, 255, 0.1);
+  color: var(--color-primary);
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: background var(--transition-fast), transform var(--transition-fast), opacity var(--transition-fast);
+  transition: all var(--transition-fast);
 }
 
 .submitBtn:hover:not(:disabled) {
-  background: var(--color-primary-dim);
+  background: rgba(0, 240, 255, 0.25);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 12px var(--color-primary-glow);
+  color: #fff;
   transform: scale(1.05);
 }
 

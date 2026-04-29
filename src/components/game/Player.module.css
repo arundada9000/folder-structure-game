@@ -4,11 +4,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   color: var(--color-primary);
-  filter: drop-shadow(0 0 8px var(--color-primary-glow));
   pointer-events: none;
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.15) 0%, transparent 70%);
+  border-radius: var(--radius-full);
+  animation: player-glow 2s ease-in-out infinite;
+}
+
+@keyframes player-glow {
+  0%, 100% { filter: drop-shadow(0 0 8px var(--color-primary-glow)); }
+  50% { filter: drop-shadow(0 0 16px var(--color-primary-glow)) drop-shadow(0 0 24px rgba(0, 240, 255, 0.3)); }
 }
 
 .celebrating {

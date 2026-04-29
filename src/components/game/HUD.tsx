@@ -7,7 +7,7 @@
  */
 
 import { motion } from 'framer-motion';
-import { Target, Footprints, Map, RotateCcw, ArrowLeft, Lock, Eye } from 'lucide-react';
+import { Target, Footprints, Map, RotateCcw, ArrowLeft, Lock, Eye, TreePine, Code2 } from 'lucide-react';
 import AvatarPicker from './AvatarPicker';
 import styles from './HUD.module.css';
 
@@ -20,6 +20,8 @@ interface HUDProps {
   maxMoves: number | null;
   allowAbsolute: boolean;
   hiddenMode: boolean;
+  viewMode: 'tree' | 'code';
+  onToggleView: () => void;
   onReset: () => void;
   onBack: () => void;
 }
@@ -33,6 +35,8 @@ export default function HUD({
   maxMoves,
   allowAbsolute,
   hiddenMode,
+  viewMode,
+  onToggleView,
   onReset,
   onBack,
 }: HUDProps) {
@@ -86,6 +90,9 @@ export default function HUD({
           </span>
         </div>
         <AvatarPicker />
+        <button className={styles.iconBtn} onClick={onToggleView} aria-label="Toggle view" title={viewMode === 'tree' ? 'Switch to Code View' : 'Switch to Tree View'}>
+          {viewMode === 'tree' ? <Code2 size={16} /> : <TreePine size={16} />}
+        </button>
         <button className={styles.iconBtn} onClick={onReset} aria-label="Reset level" title="Reset level">
           <RotateCcw size={16} />
         </button>
