@@ -1,23 +1,23 @@
 # PathPilot
 
-An interactive, web-based educational game that teaches file system navigation using relative and absolute paths. Navigate visual folder trees by entering path commands — a mix between a puzzle game and a navigation simulator.
+An interactive, web-based educational game that teaches file system navigation using relative and absolute paths. Navigate visual folder trees by entering path commands - a mix between a puzzle game and a navigation simulator.
 
 ## Features
 
-- **Visual File Tree** — See the file system as an interactive tree with animated nodes and connecting lines
-- **Path Commands** — Type real path commands (`../folder`, `/root/src`) to move a robot character between folders
-- **5 Handcrafted Levels** — Progressive difficulty from basics to complex trees with constraints
-  - Level 1: The Basics — Learn with a simple tree
-  - Level 2: Relative Navigation — Only relative paths allowed
-  - Level 3: Fog of War — Partially hidden tree structure
-  - Level 4: Under Pressure — Limited moves, no absolute paths
-  - Level 5: Deep Dive — Complex tree with deep nesting
-- **Random Level Generator** — Generate randomized trees with configurable depth and branching
-- **Custom Tree Upload** — Import your own folder structure as JSON
-- **Animated Robot Avatar** — Smooth spring-physics movement between nodes
-- **Toast Notifications** — Real-time feedback for valid moves, errors, and warnings
-- **Responsive Design** — Works on mobile, tablet, and desktop
-- **Accessibility** — Keyboard-friendly, high contrast, clear focus states
+- **Visual File Tree** - See the file system as an interactive tree with animated nodes and connecting lines
+- **Path Commands** - Type real path commands (`../folder`, `/root/src`) to move a robot character between folders
+- **5 Handcrafted Levels** - Progressive difficulty from basics to complex trees with constraints
+  - Level 1: The Basics - Learn with a simple tree
+  - Level 2: Relative Navigation - Only relative paths allowed
+  - Level 3: Fog of War - Partially hidden tree structure
+  - Level 4: Under Pressure - Limited moves, no absolute paths
+  - Level 5: Deep Dive - Complex tree with deep nesting
+- **Random Level Generator** - Generate randomized trees with configurable depth and branching
+- **Custom Tree Upload** - Import your own folder structure as JSON
+- **Animated Robot Avatar** - Smooth spring-physics movement between nodes
+- **Toast Notifications** - Real-time feedback for valid moves, errors, and warnings
+- **Responsive Design** - Works on mobile, tablet, and desktop
+- **Accessibility** - Keyboard-friendly, high contrast, clear focus states
 
 ## Tech Stack
 
@@ -59,15 +59,15 @@ npm start
 
 ## How to Play
 
-1. **Select a Level** — Choose from 5 built-in levels, upload a custom tree, or generate a random one
-2. **Read the Target** — The HUD shows your current position and target folder
-3. **Enter a Path** — Type a path command in the terminal input:
-   - `../folder` — Go up one level, then into "folder"
-   - `../../docs` — Go up two levels, then into "docs"
-   - `/root/src/app` — Navigate using an absolute path (if allowed)
-   - `.` — Current directory (no movement)
-4. **Watch the Robot Move** — Your character animates through each folder
-5. **Reach the Target** — Navigate to the highlighted target folder to win
+1. **Select a Level** - Choose from 5 built-in levels, upload a custom tree, or generate a random one
+2. **Read the Target** - The HUD shows your current position and target folder
+3. **Enter a Path** - Type a path command in the terminal input:
+   - `../folder` - Go up one level, then into "folder"
+   - `../../docs` - Go up two levels, then into "docs"
+   - `/root/src/app` - Navigate using an absolute path (if allowed)
+   - `.` - Current directory (no movement)
+4. **Watch the Robot Move** - Your character animates through each folder
+5. **Reach the Target** - Navigate to the highlighted target folder to win
 
 ### Path Syntax
 

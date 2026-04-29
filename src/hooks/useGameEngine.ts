@@ -3,25 +3,26 @@
 /**
  * USE GAME ENGINE
  *
- * Central game state manager. Handles path execution, animation stepping,
- * win/loss detection, and move tracking.
+ * Central game state manager. Handles path execution with instant movement,
+ * free exploration, and win detection on each move.
+ *
+ * Key design: Players can freely navigate the tree. Every move immediately
+ * teleports the robot. If you land on the target, you win.
  */
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import type { GameState, GameStatus, LevelConfig } from '@/types';
 import { resolvePath } from '@/lib/pathParser';
 import { getVisiblePaths } from '@/lib/treeUtils';
-
-/** Delay between animation steps in ms */
-const STEP_DELAY = 350;
+import { useAudio } from '@/hooks/useAudio';
 
 interface UseGameEngineReturn {
   state: GameState;
   visiblePaths: Set<string>;
   loadLevel: (level: LevelConfig) => void;
-  executeMove: (input: string) => { success: boolean; error?: string };
+  executeMove: (input: string) => { success: boolean; error?: string; reachedTarget?: boolean };
+  previewMove: (input: string) => void;
   resetLevel: () => void;
-  isAnimating: boolean;
 }
 
 function createInitialState(level: LevelConfig): GameState {
@@ -39,92 +40,37 @@ function createInitialState(level: LevelConfig): GameState {
 }
 
 export function useGameEngine(): UseGameEngineReturn {
-  const [state, setState] = useState<GameState>(() => {
-    /* Placeholder state until a level is loaded */
-    return {
-      level: {} as LevelConfig,
-      currentPath: '',
-      targetPath: '',
-      moveCount: 0,
-      status: 'menu' as GameStatus,
-      pathHistory: [],
-      visitedPaths: [],
-      isAnimating: false,
-      displayPath: '',
-    };
-  });
+  const [state, setState] = useState<GameState>(() => ({
+    level: {} as LevelConfig,
+    currentPath: '',
+    targetPath: '',
+    moveCount: 0,
+    status: 'menu' as GameStatus,
+    pathHistory: [],
+    visitedPaths: [],
+    isAnimating: false,
+    displayPath: '',
+  }));
 
-  const animationRef = useRef<NodeJS.Timeout | null>(null);
-  const stepsQueueRef = useRef<string[]>([]);
-  const stepIndexRef = useRef(0);
-
-  /* Clean up animation on unmount */
-  useEffect(() => {
-    return () => {
-      if (animationRef.current) clearTimeout(animationRef.current);
-    };
-  }, []);
+  const { playStart, playMove, playWin, playError } = useAudio();
 
   const loadLevel = useCallback((level: LevelConfig) => {
-    if (animationRef.current) clearTimeout(animationRef.current);
     setState(createInitialState(level));
-  }, []);
+    playStart();
+  }, [playStart]);
 
   const resetLevel = useCallback(() => {
-    if (animationRef.current) clearTimeout(animationRef.current);
     setState((prev) => {
-      if (!prev.level.id) return prev;
+      if (!prev.level.id && prev.level.id !== 0) return prev;
       return createInitialState(prev.level);
     });
-  }, []);
-
-  /**
-   * Process the next animation step from the queue.
-   */
-  const processNextStep = useCallback(() => {
-    const steps = stepsQueueRef.current;
-    const idx = stepIndexRef.current;
-
-    if (idx >= steps.length) {
-      /* Animation complete */
-      const finalPath = steps[steps.length - 1];
-      setState((prev) => {
-        const newStatus: GameStatus =
-          finalPath === prev.targetPath
-            ? 'won'
-            : prev.level.maxMoves !== null && prev.moveCount >= prev.level.maxMoves
-              ? 'lost'
-              : 'playing';
-
-        return {
-          ...prev,
-          currentPath: finalPath,
-          displayPath: finalPath,
-          isAnimating: false,
-          status: newStatus,
-        };
-      });
-      return;
-    }
-
-    const nextPath = steps[idx];
-    stepIndexRef.current = idx + 1;
-
-    setState((prev) => ({
-      ...prev,
-      displayPath: nextPath,
-      visitedPaths: prev.visitedPaths.includes(nextPath)
-        ? prev.visitedPaths
-        : [...prev.visitedPaths, nextPath],
-    }));
-
-    animationRef.current = setTimeout(processNextStep, STEP_DELAY);
-  }, []);
+    playStart();
+  }, [playStart]);
 
   const executeMove = useCallback(
-    (input: string): { success: boolean; error?: string } => {
-      if (state.status !== 'playing' || state.isAnimating) {
-        return { success: false, error: 'Cannot move right now' };
+    (input: string): { success: boolean; error?: string; reachedTarget?: boolean } => {
+      if (state.status !== 'playing') {
+        return { success: false, error: 'Game is not active' };
       }
 
       /* Check absolute path restriction */
@@ -140,42 +86,81 @@ export function useGameEngine(): UseGameEngineReturn {
       const result = resolvePath(state.level.tree, state.currentPath, input);
 
       if (!result.success) {
+        playError();
         return { success: false, error: result.error };
       }
 
       /* Don't count moves that stay in place */
       if (result.finalPath === state.currentPath && result.steps.length <= 1) {
+        playError();
         return { success: false, error: 'You are already here' };
       }
 
-      /* Start animation */
-      const steps = result.steps.filter((s) => s !== state.currentPath);
-      if (steps.length === 0) {
-        return { success: false, error: 'No movement occurred' };
+      /* Instant movement — no step-by-step queue */
+      const newMoveCount = state.moveCount + 1;
+      const reachedTarget = result.finalPath === state.targetPath;
+      
+      if (reachedTarget) {
+        playWin();
+      } else {
+        playMove();
       }
+      const outOfMoves =
+        state.level.maxMoves !== null &&
+        newMoveCount >= state.level.maxMoves &&
+        !reachedTarget;
 
-      stepsQueueRef.current = steps;
-      stepIndexRef.current = 0;
+      /* Mark all intermediate steps + final as visited */
+      const allVisited = new Set(state.visitedPaths);
+      result.steps.forEach((s) => allVisited.add(s));
+      allVisited.add(result.finalPath);
 
       setState((prev) => ({
         ...prev,
-        isAnimating: true,
-        moveCount: prev.moveCount + 1,
+        currentPath: result.finalPath,
+        displayPath: result.finalPath,
+        moveCount: newMoveCount,
         pathHistory: [...prev.pathHistory, input],
+        visitedPaths: Array.from(allVisited),
+        status: reachedTarget ? 'won' : outOfMoves ? 'lost' : 'playing',
+        isAnimating: false,
       }));
 
-      /* Kick off animation */
-      animationRef.current = setTimeout(processNextStep, STEP_DELAY);
-
-      return { success: true };
+      return { success: true, reachedTarget };
     },
-    [state.status, state.isAnimating, state.level, state.moveCount, state.currentPath, processNextStep]
+    [state.status, state.level, state.moveCount, state.currentPath, state.visitedPaths, state.targetPath, playError, playMove, playWin]
   );
+
+  const previewMove = useCallback((input: string) => {
+    if (state.status !== 'playing') return;
+
+    if (!input.trim()) {
+      setState(prev => ({ ...prev, displayPath: prev.currentPath }));
+      return;
+    }
+
+    /* Check absolute path restriction */
+    if (!state.level.allowAbsolute && input.trim().startsWith('/')) {
+      setState(prev => ({ ...prev, displayPath: prev.currentPath }));
+      return;
+    }
+
+    const result = resolvePath(state.level.tree, state.currentPath, input);
+    if (result.success) {
+      if (state.displayPath !== result.finalPath) {
+        setState(prev => ({ ...prev, displayPath: result.finalPath }));
+      }
+    } else {
+      if (state.displayPath !== state.currentPath) {
+        setState(prev => ({ ...prev, displayPath: prev.currentPath }));
+      }
+    }
+  }, [state.status, state.level, state.currentPath, state.displayPath]);
 
   /* Compute visible paths for hidden mode */
   const visiblePaths: Set<string> = state.level.hiddenMode
     ? getVisiblePaths(state.level.tree, state.displayPath, state.level.visibilityRadius)
     : new Set<string>();
 
-  return { state, visiblePaths, loadLevel, executeMove, resetLevel, isAnimating: state.isAnimating };
+  return { state, visiblePaths, loadLevel, executeMove, previewMove, resetLevel };
 }

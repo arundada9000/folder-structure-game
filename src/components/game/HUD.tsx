@@ -42,8 +42,8 @@ export default function HUD({
     <div className={styles.hud}>
       {/* Left: back + level info */}
       <div className={styles.left}>
-        <button className={styles.iconBtn} onClick={onBack} aria-label="Back to menu" title="Back to menu">
-          <ArrowLeft size={16} />
+        <button className={styles.iconBtn} onClick={onBack} aria-label="Back to home" title="Back to home">
+          <ArrowLeft size={16} /> Home
         </button>
         <div className={styles.levelInfo}>
           <span className={styles.levelBadge}>Level {levelId}</span>

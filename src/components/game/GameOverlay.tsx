@@ -80,7 +80,7 @@ export default function GameOverlay({
 
             <div className={styles.actions}>
               <button className={styles.btnSecondary} onClick={onBack}>
-                <ArrowLeft size={14} /> Menu
+                <ArrowLeft size={14} /> Home
               </button>
               <button className={styles.btnSecondary} onClick={onRestart}>
                 <RotateCcw size={14} /> Retry

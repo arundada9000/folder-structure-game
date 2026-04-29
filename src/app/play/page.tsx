@@ -60,6 +60,12 @@ export default function PlayPage() {
         return;
       }
 
+      /* Win! */
+      if (result.reachedTarget) {
+        toast.success('Destination reached!');
+        return;
+      }
+
       /* Check move limit warning */
       if (
         state.level.maxMoves !== null &&
@@ -72,14 +78,9 @@ export default function PlayPage() {
     [executeMove, state.level, state.moveCount, toast]
   );
 
-  /* Handle win detection via state change */
+  /* Handle win/loss detection */
   const isWon = state.status === 'won';
   const isLost = state.status === 'lost';
-
-  /* Delayed toast for win/loss (avoid double-render issues) */
-  useState(() => {
-    /* This is intentionally a state initializer side-effect pattern */
-  });
 
   /* Generate random level */
   const handleGenerate = useCallback(() => {
@@ -185,8 +186,9 @@ export default function PlayPage() {
 
           <PathInput
             currentPath={state.currentPath}
+            tree={state.level.tree}
             onSubmit={handlePathSubmit}
-            disabled={state.isAnimating || isWon || isLost}
+            disabled={isWon || isLost}
             hasError={inputError}
           />
 

@@ -143,7 +143,7 @@ export default function HomePage() {
       {/* ============ FOOTER ============ */}
       <footer className={styles.footer}>
         <p>
-          PathPilot — Built for learning file system navigation
+          PathPilot - Built for learning file system navigation
         </p>
       </footer>
     </main>

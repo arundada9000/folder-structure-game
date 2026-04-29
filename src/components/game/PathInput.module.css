@@ -49,9 +49,16 @@
   flex-shrink: 0;
 }
 
+/* --- Input wrapper (relative for dropdown) --- */
+.inputWrapper {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
 /* --- Input --- */
 .input {
-  flex: 1;
+  width: 100%;
   border: none;
   background: transparent;
   color: var(--color-text-primary);
@@ -71,6 +78,68 @@
 .input:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* --- Autocomplete suggestions dropdown --- */
+.suggestions {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  max-height: 220px;
+  overflow-y: auto;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  z-index: var(--z-overlay);
+  padding: var(--space-xs);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.suggestionItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  text-align: left;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  width: 100%;
+}
+
+.suggestionItem:hover,
+.suggestionSelected {
+  background: var(--color-primary-glow);
+  color: var(--color-text-primary);
+}
+
+.suggestionSelected .suggestionIcon {
+  color: var(--color-primary);
+}
+
+.suggestionIcon {
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+  transition: color var(--transition-fast);
+}
+
+.suggestionName {
+  flex: 1;
+}
+
+.suggestionHint {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  font-style: italic;
 }
 
 /* --- Submit button --- */
@@ -103,12 +172,19 @@
   cursor: not-allowed;
 }
 
-/* --- Hint --- */
+/* --- Hint bar --- */
 .hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
   margin-top: var(--space-xs);
-  text-align: center;
   font-size: var(--text-xs);
   color: var(--color-text-muted);
+}
+
+.hintSep {
+  color: var(--color-border-hover);
 }
 
 .kbd {
@@ -120,6 +196,7 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   color: var(--color-text-secondary);
+  line-height: 1.4;
 }
 
 /* --- Responsive --- */
@@ -135,5 +212,14 @@
 
   .input {
     font-size: var(--text-xs);
+  }
+
+  .suggestions {
+    max-height: 160px;
+  }
+
+  .hint {
+    gap: var(--space-xs);
+    font-size: 10px;
   }
 }
