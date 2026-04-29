@@ -1,0 +1,328 @@
+Build a polished, responsive web-based educational game called **“PathPilot”** that teaches users how to navigate file systems using relative and absolute paths.
+
+The experience should feel like a mix between a puzzle game and a navigation simulator, not just a form input exercise.
+
+---
+
+# 🎯 CORE GAME CONCEPT
+
+* Represent a file system as a **visual tree/graph**
+* Each folder is a node
+* The player controls a **character (car/robot)** that moves between folders
+* Movement is controlled by user-entered path commands:
+
+  * ../folder/subfolder
+  * /root/folder
+* The goal is to navigate from a **random starting folder to a target folder**
+
+---
+
+# 🧱 TECH STACK
+
+* Next.js (App Router)
+* TypeScript
+* Tailwind CSS
+* Framer Motion (for animations)
+* No heavy state libraries (use hooks)
+* No canvas initially (DOM-based rendering)
+
+---
+
+# 🧠 CORE SYSTEMS
+
+## 1. FILE TREE ENGINE
+
+* Tree-based structure:
+
+  * name
+  * parent
+  * children
+* Ability to:
+
+  * generate random trees
+  * import custom structures (see upload feature)
+
+---
+
+## 2. PATH PARSER (CRITICAL)
+
+Must correctly handle:
+
+* Absolute paths (/root/folder)
+* Relative paths (../folder)
+* Current directory (.)
+* Invalid paths
+
+Behavior:
+
+* Parse step-by-step
+* Animate movement per segment
+* Stop and error if invalid step occurs
+
+---
+
+## 🚗 3. PLAYER MOVEMENT & ANIMATION
+
+Use Framer Motion to:
+
+* Animate movement node-to-node
+* Each "/" = one movement step
+* Smooth transitions (ease-in-out)
+
+Visual feedback:
+
+* ✅ Valid move → smooth movement
+* ❌ Invalid move → shake animation + error toast
+* 🎯 Success → highlight target + celebratory animation
+
+---
+
+# 🍞 4. TOAST NOTIFICATION SYSTEM (IMPORTANT)
+
+Implement a clean, modern toast system:
+
+### Behavior:
+
+* Top-right corner (desktop), top-center (mobile)
+* Auto-dismiss after 2–4 seconds
+* Stack multiple toasts
+
+### Types:
+
+1. Success
+
+   * "Destination reached!"
+2. Error
+
+   * "Invalid path"
+   * "Folder does not exist"
+3. Info
+
+   * "Using relative path mode"
+4. Warning
+
+   * "Move limit almost reached"
+
+### Design:
+
+* Minimal, clean UI
+* Subtle animations (fade + slide)
+* Color-coded (green, red, blue, yellow)
+
+---
+
+# 🎮 5. GAME MODES & LEVELS
+
+## Prebuilt Levels (must include)
+
+### Level 1: Basics
+
+* Small tree (2–3 levels)
+* Visible structure
+* No restrictions
+
+### Level 2: Relative Paths
+
+* Must use ../
+* Start not at root
+
+### Level 3: Hidden Structure
+
+* Only partial tree visible
+* Encourages thinking
+
+### Level 4: Constraints
+
+* Limited moves
+* No absolute paths
+
+### Level 5: Complex Tree
+
+* Deep hierarchy
+* Multiple valid paths
+
+---
+
+## Dynamic Level Generator
+
+* Adjustable:
+
+  * depth
+  * branching factor
+* Random start and target nodes
+
+---
+
+# 📂 6. USER FOLDER UPLOAD FEATURE
+
+Allow users to upload a folder structure safely.
+
+## Implementation Approach:
+
+* Accept JSON format OR parsed structure
+* DO NOT access real file system directly (security)
+
+### Example format:
+
+{
+"name": "root",
+"children": [
+{ "name": "src", "children": [...] },
+{ "name": "docs", "children": [] }
+]
+}
+
+## Features:
+
+* Validate structure before loading
+* Show error toast if invalid
+* Convert into game map
+
+Optional:
+
+* “Generate from names only” mode
+
+---
+
+# 🧩 7. UI COMPONENTS
+
+## Required Components:
+
+* GameBoard (visual tree)
+* FolderNode (each node)
+* Player (car/robot)
+* PathInput (command input)
+* HUD (status info)
+* ToastSystem
+
+---
+
+# 🎨 8. UI/UX DESIGN
+
+## Visual Style:
+
+* Clean, modern, minimal
+* Slightly playful (game feel)
+
+## Feedback:
+
+* Hover effects on nodes
+* Highlight current node
+* Highlight target node
+
+## Ghost Path:
+
+* Show previous attempts as faint trails
+
+---
+
+# 📱 9. RESPONSIVENESS
+
+Must work on:
+
+* Mobile (stacked layout)
+* Tablet
+* Desktop
+
+Mobile adjustments:
+
+* Larger input field
+* Simplified tree layout
+
+---
+
+# 📈 10. SEO OPTIMIZATION
+
+Create a landing page with:
+
+* Title: “Learn File Paths Through Interactive Game”
+* Meta description
+* Keywords:
+
+  * file system game
+  * learn relative path
+  * linux path practice
+
+Include:
+
+* OpenGraph tags
+* Structured headings
+
+---
+
+# ♿ 11. ACCESSIBILITY
+
+* Keyboard-friendly input
+* Clear error messages
+* High contrast UI
+* Focus states
+
+---
+
+# 📁 12. PROJECT STRUCTURE
+
+* components/
+* lib/
+
+  * pathParser.ts
+  * validator.ts
+* hooks/
+* types/
+* app/
+
+---
+
+# 📄 13. README.md
+
+Generate a clean README with:
+
+* Project overview
+* Features
+* Tech stack
+* Setup instructions
+* How to play
+* Screenshots placeholder
+* Future roadmap
+
+---
+
+# 🚫 14. .gitignore
+
+Include:
+node_modules
+.next
+.env
+dist
+logs
+.DS_Store
+
+---
+
+# ⚡ 15. PERFORMANCE & CODE QUALITY
+
+* Modular TypeScript code
+* Avoid unnecessary dependencies
+* Optimize re-renders
+* Keep logic clean and reusable
+
+---
+
+# 🎯 FINAL GOAL
+
+Deliver a **high-quality MVP** that is:
+
+* fun and interactive
+* visually polished
+* logically correct
+* easy to extend
+
+Avoid overengineering. Focus on:
+
+* smooth animations
+* clear feedback
+* intuitive gameplay
+
+most-important 
+dont write repetitive code and use usable codes
+use css variables dont hardcode it 
+proper documentation on how to run, play and other things.
