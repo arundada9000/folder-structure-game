@@ -18,7 +18,7 @@ export default function HomePage() {
     <main className={styles.main}>
       {/* ============ HERO ============ */}
       <section className={styles.hero}>
-        <div className={styles.heroGrid} />
+        <div className="bg-grid-wrapper" />
         <div className={styles.heroContent}>
           <div className={styles.heroBadge}>
             <Terminal size={14} />

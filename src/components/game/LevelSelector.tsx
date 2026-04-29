@@ -6,8 +6,9 @@
  * Card-based level selection with difficulty indicators and custom level upload.
  */
 
-import { motion } from 'framer-motion';
-import { Play, Lock, Unlock, Gauge, Eye, Shuffle, Upload } from 'lucide-react';
+import { useRef } from 'react';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { Play, Lock, Unlock, Gauge, Eye, Shuffle, Upload, TerminalSquare } from 'lucide-react';
 import type { LevelConfig } from '@/types';
 import styles from './LevelSelector.module.css';
 
@@ -26,6 +27,61 @@ const DIFFICULTY_COLORS: Record<number, string> = {
   5: 'var(--color-error)',
 };
 
+function TiltCard({ children, onClick, delay, accentColor, className = '' }: any) {
+  const ref = useRef<HTMLButtonElement>(null);
+  
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const mouseXSpring = useSpring(x, { stiffness: 300, damping: 30 });
+  const mouseYSpring = useSpring(y, { stiffness: 300, damping: 30 });
+
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ['10deg', '-10deg']);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ['-10deg', '10deg']);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    const xPct = mouseX / width - 0.5;
+    const yPct = mouseY / height - 0.5;
+    x.set(xPct);
+    y.set(yPct);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <motion.button
+      ref={ref}
+      className={`${styles.card} ${className}`}
+      onClick={onClick}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      initial={{ opacity: 0, y: 30, scale: 0.9 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ delay, type: 'spring', stiffness: 200, damping: 20 }}
+      whileTap={{ scale: 0.95 }}
+      style={{
+        rotateX,
+        rotateY,
+        transformStyle: 'preserve-3d',
+        '--card-accent': accentColor,
+      } as React.CSSProperties}
+    >
+      <div className={styles.cardInner} style={{ transform: 'translateZ(30px)' }}>
+        {children}
+      </div>
+    </motion.button>
+  );
+}
+
 export default function LevelSelector({ levels, onSelect, onCustom, onGenerate }: LevelSelectorProps) {
   return (
     <div className={styles.container}>
@@ -36,19 +92,14 @@ export default function LevelSelector({ levels, onSelect, onCustom, onGenerate }
 
       <div className={styles.grid}>
         {levels.map((level, idx) => (
-          <motion.button
+          <TiltCard
             key={level.id}
-            className={styles.card}
             onClick={() => onSelect(level)}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.08, type: 'spring', stiffness: 300, damping: 25 }}
-            whileHover={{ scale: 1.03, y: -4 }}
-            whileTap={{ scale: 0.98 }}
-            style={{ '--card-accent': DIFFICULTY_COLORS[level.id] || 'var(--color-primary)' } as React.CSSProperties}
+            delay={idx * 0.1}
+            accentColor={DIFFICULTY_COLORS[level.id] || 'var(--color-primary)'}
           >
             <div className={styles.cardHeader}>
-              <span className={styles.levelNum}>Level {level.id}</span>
+              <span className={styles.levelNum}>Mission {level.id}</span>
               <div className={styles.difficultyDots}>
                 {Array.from({ length: 5 }).map((_, i) => (
                   <span
@@ -81,40 +132,34 @@ export default function LevelSelector({ levels, onSelect, onCustom, onGenerate }
             </div>
 
             <div className={styles.playIcon}>
-              <Play size={16} />
+              <TerminalSquare size={16} />
             </div>
-          </motion.button>
+          </TiltCard>
         ))}
 
         {/* Custom level card */}
-        <motion.button
-          className={`${styles.card} ${styles.cardSpecial}`}
+        <TiltCard
+          className={styles.cardSpecial}
           onClick={onCustom}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: levels.length * 0.08, type: 'spring', stiffness: 300, damping: 25 }}
-          whileHover={{ scale: 1.03, y: -4 }}
-          whileTap={{ scale: 0.98 }}
+          delay={levels.length * 0.1}
+          accentColor="var(--color-info)"
         >
           <Upload size={24} className={styles.specialIcon} />
           <h3 className={styles.cardTitle}>Upload Custom</h3>
           <p className={styles.cardDesc}>Import your own folder structure as JSON</p>
-        </motion.button>
+        </TiltCard>
 
         {/* Random level card */}
-        <motion.button
-          className={`${styles.card} ${styles.cardSpecial}`}
+        <TiltCard
+          className={styles.cardSpecial}
           onClick={onGenerate}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: (levels.length + 1) * 0.08, type: 'spring', stiffness: 300, damping: 25 }}
-          whileHover={{ scale: 1.03, y: -4 }}
-          whileTap={{ scale: 0.98 }}
+          delay={(levels.length + 1) * 0.1}
+          accentColor="var(--color-secondary)"
         >
           <Shuffle size={24} className={styles.specialIcon} />
           <h3 className={styles.cardTitle}>Random Challenge</h3>
           <p className={styles.cardDesc}>Generate a randomized tree to test your skills</p>
-        </motion.button>
+        </TiltCard>
       </div>
     </div>
   );

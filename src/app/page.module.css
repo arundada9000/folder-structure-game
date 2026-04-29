@@ -15,16 +15,7 @@
   overflow: hidden;
 }
 
-.heroGrid {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-  background-size: 48px 48px;
-  mask-image: radial-gradient(ellipse 60% 60% at 50% 40%, black 20%, transparent 70%);
-  -webkit-mask-image: radial-gradient(ellipse 60% 60% at 50% 40%, black 20%, transparent 70%);
-}
+/* Grid is now global via bg-grid-wrapper in globals.css */
 
 .heroContent {
   position: relative;
@@ -51,11 +42,13 @@
 }
 
 .heroTitle {
-  font-size: var(--text-5xl);
+  font-size: var(--text-6xl);
   font-weight: var(--font-extrabold);
   line-height: var(--leading-tight);
-  color: var(--color-text-primary);
+  color: #ffffff;
   margin: 0;
+  text-shadow: 0 0 20px var(--color-primary-glow), 0 0 40px var(--color-primary-glow);
+  letter-spacing: -0.02em;
 }
 
 .heroAccent {
@@ -63,6 +56,9 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  text-shadow: none;
+  display: inline-block;
+  animation: float 3s ease-in-out infinite;
 }
 
 .heroDesc {
@@ -81,25 +77,53 @@
 
 /* ============ BUTTON STYLES ============ */
 .btnPrimary {
+  position: relative;
+  overflow: hidden;
   display: inline-flex;
   align-items: center;
   gap: var(--space-sm);
   padding: var(--space-md) var(--space-xl);
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dim));
-  color: var(--color-text-inverse);
+  background: rgba(0, 240, 255, 0.1);
+  color: var(--color-primary);
   font-size: var(--text-base);
   font-weight: var(--font-semibold);
   border-radius: var(--radius-lg);
   text-decoration: none;
-  border: none;
+  border: 1px solid rgba(0, 240, 255, 0.4);
   cursor: pointer;
   transition: all var(--transition-base);
   box-shadow: 0 4px 16px var(--color-primary-glow);
+  backdrop-filter: blur(8px);
+}
+
+.btnPrimary::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transform: rotate(45deg) translateX(-100%);
+  animation: sweep 4s infinite cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes sweep {
+  0%, 20% { transform: rotate(45deg) translateX(-100%); }
+  80%, 100% { transform: rotate(45deg) translateX(100%); }
 }
 
 .btnPrimary:hover {
   transform: translateY(-2px);
+  background: rgba(0, 240, 255, 0.2);
+  border-color: var(--color-primary);
   box-shadow: 0 8px 24px var(--color-primary-glow), 0 0 40px var(--color-primary-glow);
+  color: #fff;
 }
 
 .btnPrimary:active {

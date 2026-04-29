@@ -30,11 +30,27 @@
   position: relative;
 }
 
+/* Horizontal line segments - using pseudo-elements on child wrappers */
+
+/* Base animation for flowing data */
+@keyframes flowVertical {
+  0% { background-position: 0 -100%; }
+  100% { background-position: 0 100%; }
+}
+
+@keyframes flowHorizontal {
+  0% { background-position: -100% 0; }
+  100% { background-position: 100% 0; }
+}
+
 /* Vertical line from parent down to the horizontal connector */
 .verticalLine {
   width: var(--tree-line-width);
   height: calc(var(--tree-level-gap) / 2);
-  background: var(--color-tree-line);
+  background: linear-gradient(180deg, var(--color-tree-line) 0%, rgba(0, 240, 255, 0.8) 50%, var(--color-tree-line) 100%);
+  background-size: 100% 200%;
+  animation: flowVertical 2s linear infinite;
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
 }
 
 /* --- Children row (horizontal layout) --- */
@@ -57,27 +73,24 @@
 .childConnector {
   width: var(--tree-line-width);
   height: calc(var(--tree-level-gap) / 2);
-  background: var(--color-tree-line);
+  background: linear-gradient(180deg, var(--color-tree-line) 0%, rgba(0, 240, 255, 0.8) 50%, var(--color-tree-line) 100%);
+  background-size: 100% 200%;
+  animation: flowVertical 2s linear infinite;
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
 }
 
-/* Horizontal line segments - using borders on child wrappers */
 /* First child: horizontal line going right from center */
-.childFirst {
-  border-top: var(--tree-line-width) solid var(--color-tree-line);
-  border-top-right-radius: 0;
-  /* Cover from center to right edge */
-  border-left: none;
-  margin-left: 0;
-}
-
 .childFirst::before {
   content: '';
   position: absolute;
   top: 0;
   left: 50%;
   right: 0;
-  height: 0;
-  border-top: var(--tree-line-width) solid var(--color-tree-line);
+  height: var(--tree-line-width);
+  background: linear-gradient(90deg, var(--color-tree-line) 0%, rgba(0, 240, 255, 0.8) 50%, var(--color-tree-line) 100%);
+  background-size: 200% 100%;
+  animation: flowHorizontal 2s linear infinite;
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
 }
 
 /* Last child: horizontal line going left from center */
@@ -87,8 +100,11 @@
   top: 0;
   left: 0;
   right: 50%;
-  height: 0;
-  border-top: var(--tree-line-width) solid var(--color-tree-line);
+  height: var(--tree-line-width);
+  background: linear-gradient(90deg, var(--color-tree-line) 0%, rgba(0, 240, 255, 0.8) 50%, var(--color-tree-line) 100%);
+  background-size: 200% 100%;
+  animation: flowHorizontal 2s linear infinite;
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
 }
 
 /* Middle children: full horizontal line */
@@ -98,8 +114,11 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 0;
-  border-top: var(--tree-line-width) solid var(--color-tree-line);
+  height: var(--tree-line-width);
+  background: linear-gradient(90deg, var(--color-tree-line) 0%, rgba(0, 240, 255, 0.8) 50%, var(--color-tree-line) 100%);
+  background-size: 200% 100%;
+  animation: flowHorizontal 2s linear infinite;
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
 }
 
 /* Only child: just a straight vertical line, no horizontal */

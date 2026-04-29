@@ -178,6 +178,66 @@ const level5Tree: TreeNode = {
   ],
 };
 
+const secretLabTree: TreeNode = {
+  name: 'lab',
+  children: [
+    {
+      name: 'projects',
+      children: [
+        {
+          name: 'alpha',
+          children: [
+            { name: 'source', children: [] },
+            { name: 'tests', children: [] },
+            { name: 'docs', children: [] }
+          ]
+        },
+        {
+          name: 'beta',
+          children: [
+            { name: 'experiments', children: [] },
+            { name: 'data', children: [] }
+          ]
+        },
+        {
+          name: 'gamma',
+          children: [
+            { name: 'research', children: [] },
+            { name: 'classified', children: [] }
+          ]
+        }
+      ]
+    },
+    {
+      name: 'secure',
+      children: [
+        {
+          name: 'vault',
+          children: [
+            { name: 'level1', children: [] },
+            { name: 'level2', children: [] },
+            { name: 'restricted', children: [] }
+          ]
+        },
+        {
+          name: 'backup',
+          children: [
+            { name: 'archive', children: [] }
+          ]
+        }
+      ]
+    },
+    {
+      name: 'shared',
+      children: [
+        { name: 'public', children: [] },
+        { name: 'temp', children: [] }
+      ]
+    }
+  ]
+};
+
+
 /* ============================================================
    LEVEL CONFIGS
    ============================================================ */
@@ -241,5 +301,17 @@ export const LEVELS: LevelConfig[] = [
     allowAbsolute: true,
     hiddenMode: false,
     visibilityRadius: Infinity,
+  },
+  {
+    id: 6,
+    name: 'Secret Research Lab',
+    description: 'Navigate from the alpha source directory to the secure vault level2. You can only see nearby folders!',
+    tree: secretLabTree,
+    startPath: '/lab/projects/alpha/source',
+    targetPath: '/lab/secure/vault/level2',
+    maxMoves: 5,
+    allowAbsolute: false,
+    hiddenMode: true,
+    visibilityRadius: 2,
   },
 ];

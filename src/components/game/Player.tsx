@@ -9,7 +9,8 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bot } from 'lucide-react';
+import { Bot, Ghost, Rocket, UserCircle2 } from 'lucide-react';
+import { useAvatar } from '@/hooks/useAvatar';
 import styles from './Player.module.css';
 
 interface PlayerProps {
@@ -26,6 +27,7 @@ interface Position {
 export default function Player({ targetPath, boardRef, celebrating }: PlayerProps) {
   const [pos, setPos] = useState<Position | null>(null);
   const rafRef = useRef<number>(0);
+  const { avatar } = useAvatar();
 
   useEffect(() => {
     function updatePosition() {
@@ -81,7 +83,16 @@ export default function Player({ targetPath, boardRef, celebrating }: PlayerProp
       transition={{ type: 'spring', stiffness: 200, damping: 20, mass: 0.8 }}
       style={{ position: 'absolute', top: 0, left: 0 }}
     >
-      <Bot size={22} />
+      {avatar === 'bot' && <Bot size={22} />}
+      {avatar === 'ghost' && <Ghost size={22} />}
+      {avatar === 'rocket' && <Rocket size={22} />}
+      {avatar.startsWith('data:image') && (
+        <img src={avatar} alt="Player" style={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover' }} />
+      )}
+      {avatar !== 'bot' && avatar !== 'ghost' && avatar !== 'rocket' && !avatar.startsWith('data:image') && (
+        <UserCircle2 size={22} />
+      )}
+      
       <AnimatePresence>
         {celebrating && (
           <motion.div

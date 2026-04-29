@@ -8,6 +8,7 @@
 
 import { motion } from 'framer-motion';
 import { Target, Footprints, Map, RotateCcw, ArrowLeft, Lock, Eye } from 'lucide-react';
+import AvatarPicker from './AvatarPicker';
 import styles from './HUD.module.css';
 
 interface HUDProps {
@@ -75,7 +76,7 @@ export default function HUD({
         </div>
       </div>
 
-      {/* Right: moves + reset */}
+      {/* Right: moves + avatar + reset */}
       <div className={styles.right}>
         <div className={`${styles.moveStat} ${isLowMoves ? styles.moveStatLow : ''}`}>
           <Footprints size={14} />
@@ -84,6 +85,7 @@ export default function HUD({
             {maxMoves !== null && ` / ${maxMoves}`}
           </span>
         </div>
+        <AvatarPicker />
         <button className={styles.iconBtn} onClick={onReset} aria-label="Reset level" title="Reset level">
           <RotateCcw size={16} />
         </button>
