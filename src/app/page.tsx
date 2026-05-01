@@ -6,7 +6,6 @@ import {
   Target,
   ArrowRight,
   Gamepad2,
-  BookOpen,
   Upload,
   Layers,
   ChevronRight,

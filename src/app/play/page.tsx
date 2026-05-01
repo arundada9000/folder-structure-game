@@ -11,8 +11,12 @@ import { useState, useCallback } from 'react';
 import type { LevelConfig, TreeNode } from '@/types';
 import { LEVELS } from '@/lib/levels';
 import { generateRandomTree, getRandomNodePath } from '@/lib/treeUtils';
+import { getHint } from '@/lib/hints';
+import { getAchievementById } from '@/lib/achievements';
 import { useGameEngine } from '@/hooks/useGameEngine';
 import { useToast } from '@/hooks/useToast';
+import { useProgress } from '@/hooks/useProgress';
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import LevelSelector from '@/components/game/LevelSelector';
 import GameBoard from '@/components/game/GameBoard';
 import SidebarTreeView from '@/components/game/SidebarTreeView';
@@ -24,30 +28,29 @@ import ToastContainer from '@/components/ui/ToastContainer';
 import styles from './page.module.css';
 
 export default function PlayPage() {
-  const { state, visiblePaths, loadLevel, executeMove, previewMove, resetLevel } = useGameEngine();
+  const { state, visiblePaths, loadLevel, executeMove, previewMove, undoMove, resetLevel } = useGameEngine();
   const toast = useToast();
+  const { recordWin, recordAttempt, getLevelProgress, isLevelCompleted } = useProgress();
 
   const [showMenu, setShowMenu] = useState(true);
   const [showUpload, setShowUpload] = useState(false);
   const [inputError, setInputError] = useState(false);
   const [viewMode, setViewMode] = useState<'tree' | 'code'>('tree');
 
-  /* Load a level and switch to game view */
   const handleSelectLevel = useCallback(
     (level: LevelConfig) => {
       loadLevel(level);
       setShowMenu(false);
+      recordAttempt(level.id);
       toast.info(`Level ${level.id}: ${level.name}`);
     },
-    [loadLevel, toast]
+    [loadLevel, toast, recordAttempt]
   );
 
-  /* Handle path submission from input */
   const handlePathSubmit = useCallback(
     (path: string) => {
       setInputError(false);
 
-      /* Check absolute path restriction before executing */
       if (!state.level.allowAbsolute && path.trim().startsWith('/')) {
         toast.warning('Absolute paths are not allowed in this level');
         setInputError(true);
@@ -62,13 +65,18 @@ export default function PlayPage() {
         return;
       }
 
-      /* Win! */
       if (result.reachedTarget) {
+        const newAchievements = recordWin(state.level.id, state.moveCount + 1, state.level.maxMoves);
         toast.success('Destination reached!');
+        for (const achId of newAchievements) {
+          const ach = getAchievementById(achId);
+          if (ach) {
+            toast.success(`Achievement unlocked: ${ach.name} ${ach.icon}`, 5000);
+          }
+        }
         return;
       }
 
-      /* Check move limit warning */
       if (
         state.level.maxMoves !== null &&
         state.level.maxMoves - (state.moveCount + 1) <= 2 &&
@@ -77,14 +85,12 @@ export default function PlayPage() {
         toast.warning(`Only ${state.level.maxMoves - state.moveCount - 1} moves remaining`);
       }
     },
-    [executeMove, state.level, state.moveCount, toast]
+    [executeMove, state.level, state.moveCount, toast, recordWin]
   );
 
-  /* Handle win/loss detection */
   const isWon = state.status === 'won';
   const isLost = state.status === 'lost';
 
-  /* Generate random level */
   const handleGenerate = useCallback(() => {
     const depth = 3 + Math.floor(Math.random() * 2);
     const branching = 2 + Math.floor(Math.random() * 2);
@@ -108,7 +114,6 @@ export default function PlayPage() {
     handleSelectLevel(level);
   }, [handleSelectLevel]);
 
-  /* Handle custom tree upload */
   const handleCustomTree = useCallback(
     (tree: TreeNode) => {
       const startPath = `/${tree.name}`;
@@ -133,13 +138,11 @@ export default function PlayPage() {
     [handleSelectLevel, toast]
   );
 
-  /* Go back to menu */
   const handleBack = useCallback(() => {
     setShowMenu(true);
     toast.clearAll();
   }, [toast]);
 
-  /* Next level */
   const handleNextLevel = useCallback(() => {
     const currentIdx = LEVELS.findIndex((l) => l.id === state.level.id);
     if (currentIdx >= 0 && currentIdx < LEVELS.length - 1) {
@@ -149,9 +152,30 @@ export default function PlayPage() {
     }
   }, [state.level.id, handleSelectLevel, handleBack]);
 
+  const handleUndo = useCallback(() => {
+    const success = undoMove();
+    if (success) {
+      toast.info('Move undone');
+    }
+  }, [undoMove, toast]);
+
+  const handleHint = useCallback(() => {
+    if (state.status !== 'playing') return;
+
+    const hint = getHint(state.level.tree, state.currentPath, state.targetPath);
+    if (hint) {
+      toast.info(`Hint: ${hint.explanation}`, 5000);
+    } else {
+      toast.warning('No hint available');
+    }
+  }, [state.status, state.level.tree, state.currentPath, state.targetPath, toast]);
+
   const hasNextLevel = LEVELS.findIndex((l) => l.id === state.level.id) < LEVELS.length - 1;
 
+  const levelProgress = state.level.id ? getLevelProgress(state.level.id) : undefined;
+
   return (
+    <ErrorBoundary>
     <div className={styles.page}>
       {showMenu ? (
         <LevelSelector
@@ -159,22 +183,26 @@ export default function PlayPage() {
           onSelect={handleSelectLevel}
           onCustom={() => setShowUpload(true)}
           onGenerate={handleGenerate}
+          getProgress={getLevelProgress}
+          isCompleted={isLevelCompleted}
         />
       ) : (
         <div className={styles.gameLayout}>
           <HUD
             levelName={state.level.name}
             levelId={state.level.id}
-            currentPath={state.currentPath}
             targetPath={state.targetPath}
             moveCount={state.moveCount}
             maxMoves={state.level.maxMoves}
             allowAbsolute={state.level.allowAbsolute}
             hiddenMode={state.level.hiddenMode}
             viewMode={viewMode}
+            canUndo={state.status === 'playing' && state.moveCount > 0}
             onToggleView={() => setViewMode((prev) => (prev === 'tree' ? 'code' : 'tree'))}
             onReset={resetLevel}
             onBack={handleBack}
+            onUndo={handleUndo}
+            onHint={handleHint}
           />
 
           <div className={styles.gameContent}>
@@ -190,16 +218,15 @@ export default function PlayPage() {
             )}
 
             <div className={styles.boardArea}>
-              <GameBoard
-                tree={state.level.tree}
-                currentPath={state.currentPath}
-                targetPath={state.targetPath}
-                displayPath={state.displayPath}
-                visitedPaths={state.visitedPaths}
-                hiddenMode={state.level.hiddenMode}
-                visiblePaths={visiblePaths}
-                celebrating={isWon}
-              />
+          <GameBoard
+            tree={state.level.tree}
+            targetPath={state.targetPath}
+            displayPath={state.displayPath}
+            visitedPaths={state.visitedPaths}
+            hiddenMode={state.level.hiddenMode}
+            visiblePaths={visiblePaths}
+            celebrating={isWon}
+          />
 
               <GameOverlay
                 status={state.status}
@@ -208,6 +235,7 @@ export default function PlayPage() {
                 onNextLevel={handleNextLevel}
                 onBack={handleBack}
                 hasNextLevel={hasNextLevel}
+                bestScore={levelProgress?.bestMoveCount}
               />
             </div>
           </div>
@@ -222,15 +250,14 @@ export default function PlayPage() {
         </div>
       )}
 
-      {/* Upload modal */}
       <UploadModal
         isOpen={showUpload}
         onClose={() => setShowUpload(false)}
         onLoad={handleCustomTree}
       />
 
-      {/* Toast notifications */}
       <ToastContainer toasts={toast.toasts} onDismiss={toast.removeToast} />
     </div>
+    </ErrorBoundary>
   );
 }

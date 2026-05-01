@@ -1,33 +1,27 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 
 const AVATAR_KEY = 'pathpilot-avatar';
 
+function getStoredAvatar(): string {
+  try {
+    return localStorage.getItem(AVATAR_KEY) || 'bot';
+  } catch {
+    return 'bot';
+  }
+}
+
 export function useAvatar() {
-  const [avatar, setAvatar] = useState<string>('bot');
-
-  /* Read from localStorage on mount */
-  useEffect(() => {
-    const stored = localStorage.getItem(AVATAR_KEY);
-    if (stored) {
-      setAvatar(stored);
-    }
-  }, []);
-
-  /* Listen for cross-component sync events */
-  useEffect(() => {
-    const handler = (e: Event) => {
-      const detail = (e as CustomEvent<string>).detail;
-      setAvatar(detail);
-    };
-    window.addEventListener('avatar-changed', handler);
-    return () => window.removeEventListener('avatar-changed', handler);
-  }, []);
+  const [avatar, setAvatar] = useState<string>(getStoredAvatar);
 
   const changeAvatar = useCallback((newAvatar: string) => {
     setAvatar(newAvatar);
-    localStorage.setItem(AVATAR_KEY, newAvatar);
+    try {
+      localStorage.setItem(AVATAR_KEY, newAvatar);
+    } catch {
+      /* ignore */
+    }
     window.dispatchEvent(new CustomEvent('avatar-changed', { detail: newAvatar }));
   }, []);
 

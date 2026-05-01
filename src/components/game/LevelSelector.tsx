@@ -3,13 +3,14 @@
 /**
  * LEVEL SELECTOR
  *
- * Card-based level selection with difficulty indicators and custom level upload.
+ * Card-based level selection with difficulty indicators, progress tracking,
+ * and custom level upload.
  */
 
 import { useRef } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { Play, Lock, Unlock, Gauge, Eye, Shuffle, Upload, TerminalSquare } from 'lucide-react';
-import type { LevelConfig } from '@/types';
+import { Lock, Gauge, Eye, Shuffle, Upload, TerminalSquare, CheckCircle2, Star } from 'lucide-react';
+import type { LevelConfig, LevelProgress } from '@/types';
 import styles from './LevelSelector.module.css';
 
 interface LevelSelectorProps {
@@ -17,6 +18,8 @@ interface LevelSelectorProps {
   onSelect: (level: LevelConfig) => void;
   onCustom: () => void;
   onGenerate: () => void;
+  getProgress: (levelId: number) => LevelProgress | undefined;
+  isCompleted: (levelId: number) => boolean;
 }
 
 const DIFFICULTY_COLORS: Record<number, string> = {
@@ -27,9 +30,17 @@ const DIFFICULTY_COLORS: Record<number, string> = {
   5: 'var(--color-error)',
 };
 
-function TiltCard({ children, onClick, delay, accentColor, className = '' }: any) {
+interface TiltCardProps {
+  children: React.ReactNode;
+  onClick: () => void;
+  delay: number;
+  accentColor: string;
+  className?: string;
+}
+
+function TiltCard({ children, onClick, delay, accentColor, className = '' }: TiltCardProps) {
   const ref = useRef<HTMLButtonElement>(null);
-  
+
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
@@ -82,7 +93,23 @@ function TiltCard({ children, onClick, delay, accentColor, className = '' }: any
   );
 }
 
-export default function LevelSelector({ levels, onSelect, onCustom, onGenerate }: LevelSelectorProps) {
+function StarsDisplay({ count }: { count: number }) {
+  if (count === 0) return null;
+  return (
+    <div className={styles.starsRow}>
+      {[1, 2, 3].map((star) => (
+        <Star
+          key={star}
+          size={12}
+          className={star <= count ? styles.starFilled : styles.starEmpty}
+          fill={star <= count ? 'currentColor' : 'none'}
+        />
+      ))}
+    </div>
+  );
+}
+
+export default function LevelSelector({ levels, onSelect, onCustom, onGenerate, getProgress, isCompleted }: LevelSelectorProps) {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -91,53 +118,73 @@ export default function LevelSelector({ levels, onSelect, onCustom, onGenerate }
       </div>
 
       <div className={styles.grid}>
-        {levels.map((level, idx) => (
-          <TiltCard
-            key={level.id}
-            onClick={() => onSelect(level)}
-            delay={idx * 0.1}
-            accentColor={DIFFICULTY_COLORS[level.id] || 'var(--color-primary)'}
-          >
-            <div className={styles.cardHeader}>
-              <span className={styles.levelNum}>Mission {level.id}</span>
-              <div className={styles.difficultyDots}>
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <span
-                    key={i}
-                    className={`${styles.dot} ${i < level.id ? styles.dotActive : ''}`}
-                  />
-                ))}
+        {levels.map((level, idx) => {
+          const progress = getProgress(level.id);
+          const completed = isCompleted(level.id);
+
+          return (
+            <TiltCard
+              key={level.id}
+              onClick={() => onSelect(level)}
+              delay={idx * 0.1}
+              accentColor={DIFFICULTY_COLORS[level.id] || 'var(--color-primary)'}
+              className={completed ? styles.cardCompleted : ''}
+            >
+              {completed && (
+                <div className={styles.completedBadge}>
+                  <CheckCircle2 size={14} />
+                </div>
+              )}
+
+              <div className={styles.cardHeader}>
+                <span className={styles.levelNum}>Mission {level.id}</span>
+                <div className={styles.difficultyDots}>
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <span
+                      key={i}
+                      className={`${styles.dot} ${i < level.id ? styles.dotActive : ''}`}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
 
-            <h3 className={styles.cardTitle}>{level.name}</h3>
-            <p className={styles.cardDesc}>{level.description}</p>
+              <h3 className={styles.cardTitle}>{level.name}</h3>
+              <p className={styles.cardDesc}>{level.description}</p>
 
-            <div className={styles.cardTags}>
-              {!level.allowAbsolute && (
-                <span className={styles.tag}>
-                  <Lock size={10} /> Relative Only
-                </span>
+              <div className={styles.cardTags}>
+                {!level.allowAbsolute && (
+                  <span className={styles.tag}>
+                    <Lock size={10} /> Relative Only
+                  </span>
+                )}
+                {level.hiddenMode && (
+                  <span className={styles.tag}>
+                    <Eye size={10} /> Hidden
+                  </span>
+                )}
+                {level.maxMoves !== null && (
+                  <span className={styles.tag}>
+                    <Gauge size={10} /> {level.maxMoves} moves
+                  </span>
+                )}
+              </div>
+
+              {progress && progress.bestMoveCount < 999999 && (
+                <div className={styles.progressRow}>
+                  <span className={styles.bestScore}>
+                    Best: {progress.bestMoveCount} moves
+                  </span>
+                  <StarsDisplay count={progress.bestStars} />
+                </div>
               )}
-              {level.hiddenMode && (
-                <span className={styles.tag}>
-                  <Eye size={10} /> Hidden
-                </span>
-              )}
-              {level.maxMoves !== null && (
-                <span className={styles.tag}>
-                  <Gauge size={10} /> {level.maxMoves} moves
-                </span>
-              )}
-            </div>
 
-            <div className={styles.playIcon}>
-              <TerminalSquare size={16} />
-            </div>
-          </TiltCard>
-        ))}
+              <div className={styles.playIcon}>
+                <TerminalSquare size={16} />
+              </div>
+            </TiltCard>
+          );
+        })}
 
-        {/* Custom level card */}
         <TiltCard
           className={styles.cardSpecial}
           onClick={onCustom}
@@ -149,7 +196,6 @@ export default function LevelSelector({ levels, onSelect, onCustom, onGenerate }
           <p className={styles.cardDesc}>Import your own folder structure as JSON</p>
         </TiltCard>
 
-        {/* Random level card */}
         <TiltCard
           className={styles.cardSpecial}
           onClick={onGenerate}

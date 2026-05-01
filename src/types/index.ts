@@ -5,6 +5,8 @@
 /** A single node in the file tree */
 export interface TreeNode {
   name: string;
+  type: "folder" | "file";
+  extension?: string;
   children: TreeNode[];
 }
 
@@ -40,7 +42,7 @@ export interface LevelConfig {
 }
 
 /** Current status of the game */
-export type GameStatus = 'menu' | 'playing' | 'won' | 'lost';
+export type GameStatus = "menu" | "playing" | "won" | "lost";
 
 /** Complete game state managed by the engine */
 export interface GameState {
@@ -60,7 +62,7 @@ export interface GameState {
 }
 
 /** Toast notification types */
-export type ToastType = 'success' | 'error' | 'info' | 'warning';
+export type ToastType = "success" | "error" | "info" | "warning";
 
 /** A single toast notification */
 export interface ToastItem {
@@ -75,4 +77,33 @@ export interface ToastItem {
 export interface UploadedTree {
   name: string;
   children: UploadedTree[];
+}
+
+/** Progress data for a single level */
+export interface LevelProgress {
+  levelId: number;
+  completed: boolean;
+  bestMoveCount: number;
+  bestStars: number;
+  attempts: number;
+}
+
+/** Achievement definition */
+export interface AchievementDef {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  check: (stats: PlayerStats) => boolean;
+}
+
+/** Player statistics tracked across sessions */
+export interface PlayerStats {
+  totalGamesPlayed: number;
+  totalGamesWon: number;
+  totalMoves: number;
+  perfectGames: number;
+  levelsCompleted: number[];
+  achievements: string[];
+  fastestWin: { levelId: number; moves: number } | null;
 }

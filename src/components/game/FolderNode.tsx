@@ -3,12 +3,12 @@
 /**
  * FOLDER NODE
  *
- * Visual representation of a single folder in the tree.
- * Shows folder icon, name, and status indicators.
+ * Visual representation of a single node (folder or file) in the tree.
+ * Shows icon, name with extension, and status indicators.
  */
 
 import { motion } from 'framer-motion';
-import { Folder, FolderOpen, MapPin, Flag, Eye, EyeOff } from 'lucide-react';
+import { Folder, FolderOpen, MapPin, Flag, EyeOff, FileText } from 'lucide-react';
 import styles from './FolderNode.module.css';
 
 interface FolderNodeProps {
@@ -19,6 +19,8 @@ interface FolderNodeProps {
   isVisited: boolean;
   isHidden: boolean;
   isOnGhostPath: boolean;
+  nodeType?: 'folder' | 'file';
+  extension?: string;
 }
 
 export default function FolderNode({
@@ -29,6 +31,8 @@ export default function FolderNode({
   isVisited,
   isHidden,
   isOnGhostPath,
+  nodeType = 'folder',
+  extension,
 }: FolderNodeProps) {
   if (isHidden) {
     return (
@@ -49,6 +53,8 @@ export default function FolderNode({
     .filter(Boolean)
     .join(' ');
 
+  const displayName = nodeType === 'file' && extension ? `${name}.${extension}` : name;
+
   return (
     <motion.div
       className={nodeClass}
@@ -58,7 +64,6 @@ export default function FolderNode({
       layout
       title={path}
     >
-      {/* Status indicator icons */}
       {isCurrent && (
         <div className={styles.indicator}>
           <MapPin size={12} />
@@ -70,19 +75,19 @@ export default function FolderNode({
         </div>
       )}
 
-      {/* Folder icon */}
       <div className={styles.icon}>
         {isCurrent ? (
-          <FolderOpen size={20} />
+          nodeType === 'file' ? <FileText size={20} /> : <FolderOpen size={20} />
         ) : isHidden ? (
-          <Eye size={20} />
+          <EyeOff size={20} />
+        ) : nodeType === 'file' ? (
+          <FileText size={20} />
         ) : (
           <Folder size={20} />
         )}
       </div>
 
-      {/* Folder name */}
-      <span className={styles.label}>{name}</span>
+      <span className={styles.label}>{displayName}</span>
     </motion.div>
   );
 }

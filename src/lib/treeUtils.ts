@@ -5,7 +5,7 @@
  */
 
 import type { TreeNode } from '@/types';
-import { pathToSegments, segmentsToPath } from './pathParser';
+import { pathToSegments, segmentsToPath, getDisplayName } from './pathParser';
 
 /** Folder name pools for random tree generation */
 const FOLDER_NAMES = [
@@ -25,7 +25,7 @@ export function generateRandomTree(
   maxBranching: number,
   currentDepth: number = 0
 ): TreeNode {
-  const node: TreeNode = { name: rootName, children: [] };
+  const node: TreeNode = { name: rootName, type: 'folder', children: [] };
 
   if (currentDepth >= maxDepth) return node;
 
@@ -102,7 +102,7 @@ export function getVisiblePaths(
     }
 
     for (const child of node.children) {
-      dfs(child, path + '/' + child.name, depth + 1);
+      dfs(child, path + '/' + getDisplayName(child), depth + 1);
     }
   }
 
@@ -130,12 +130,11 @@ export function getRandomNodePath(root: TreeNode, excludePath?: string): string 
       allPaths.push(path);
     }
     for (const child of node.children) {
-      dfs(child, path + '/' + child.name);
+      dfs(child, path + '/' + getDisplayName(child));
     }
   }
   dfs(root, '/' + root.name);
 
-  /* Prefer non-root paths */
   const nonRoot = allPaths.filter((p) => pathToSegments(p).length > 1);
   const pool = nonRoot.length > 0 ? nonRoot : allPaths;
   return pool[Math.floor(Math.random() * pool.length)];

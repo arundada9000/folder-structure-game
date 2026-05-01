@@ -35,6 +35,7 @@ export default function AvatarPicker() {
     if (avatar === 'ghost') return <Ghost size={20} />;
     if (avatar === 'rocket') return <Rocket size={20} />;
     if (avatar.startsWith('data:image')) {
+      // eslint-disable-next-line @next/next/no-img-element
       return <img src={avatar} alt="Custom avatar" className={styles.customAvatarImg} />;
     }
     return <UserCircle2 size={20} />;

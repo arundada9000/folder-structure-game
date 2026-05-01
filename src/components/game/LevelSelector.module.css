@@ -87,6 +87,56 @@
   transform: translateX(0);
 }
 
+/* --- Completed state --- */
+.cardCompleted .cardInner {
+  border-color: rgba(0, 230, 118, 0.3);
+}
+
+.cardCompleted .cardInner::before {
+  background: var(--color-success);
+  opacity: 0.8;
+}
+
+.completedBadge {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  color: var(--color-success);
+  z-index: 2;
+}
+
+/* --- Progress row --- */
+.progressRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-xs);
+  padding-top: var(--space-xs);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.bestScore {
+  font-size: 10px;
+  font-weight: var(--font-medium);
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+}
+
+.starsRow {
+  display: flex;
+  gap: 2px;
+  color: var(--color-warning);
+}
+
+.starFilled {
+  color: var(--color-warning);
+}
+
+.starEmpty {
+  color: var(--color-text-muted);
+  opacity: 0.4;
+}
+
 /* --- Card header --- */
 .cardHeader {
   display: flex;

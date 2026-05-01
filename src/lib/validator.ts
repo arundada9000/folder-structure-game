@@ -4,7 +4,7 @@
  * Validates user-uploaded JSON tree structures for safety and correctness.
  */
 
-import type { UploadedTree, TreeNode } from '@/types';
+import type { TreeNode } from '@/types';
 
 /** Maximum allowed tree depth */
 const MAX_DEPTH = 10;
@@ -101,7 +101,7 @@ export function validateUploadedTree(input: unknown): ValidationResult {
       }
     }
 
-    return { valid: true, result: { name, children } };
+    return { valid: true, result: { name, type: 'folder', children } };
   }
 
   const result = validateNode(input, 0, '');

@@ -4,13 +4,14 @@
  * SIDEBAR TREE VIEW
  *
  * An alternative "VS Code style" file-explorer view of the tree.
- * Shows indented folder names with expand/collapse chevrons.
+ * Shows indented folder/file names with expand/collapse chevrons.
  */
 
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, Folder, FolderOpen, MapPin, Flag, EyeOff } from 'lucide-react';
+import { ChevronRight, Folder, FolderOpen, MapPin, Flag, EyeOff, File } from 'lucide-react';
 import type { TreeNode } from '@/types';
+import { getDisplayName } from '@/lib/pathParser';
 import styles from './SidebarTreeView.module.css';
 
 interface SidebarTreeViewProps {
@@ -33,12 +34,14 @@ interface TreeItemProps {
 }
 
 function TreeItem({ node, parentPath, depth, currentPath, targetPath, visitedPaths, isNodeHidden }: TreeItemProps) {
-  const nodePath = parentPath ? `${parentPath}/${node.name}` : `/${node.name}`;
+  const displayName = getDisplayName(node);
+  const nodePath = parentPath ? `${parentPath}/${displayName}` : `/${displayName}`;
   const isCurrent = currentPath === nodePath;
   const isTarget = targetPath === nodePath;
   const isVisited = visitedPaths.includes(nodePath);
   const hidden = isNodeHidden(nodePath);
   const hasChildren = node.children.length > 0;
+  const isFile = node.type === 'file';
 
   const [expanded, setExpanded] = useState(true);
 
@@ -76,7 +79,6 @@ function TreeItem({ node, parentPath, depth, currentPath, targetPath, visitedPat
         title={nodePath}
       >
         <div className={styles.itemContent}>
-          {/* Chevron */}
           {hasChildren ? (
             <motion.span
               className={styles.chevron}
@@ -89,19 +91,18 @@ function TreeItem({ node, parentPath, depth, currentPath, targetPath, visitedPat
             <span className={styles.chevronSpacer} />
           )}
 
-          {/* Folder icon */}
           {isCurrent ? (
-            <FolderOpen size={14} className={styles.iconCurrent} />
+            isFile ? <File size={14} className={styles.iconFile} /> : <FolderOpen size={14} className={styles.iconCurrent} />
           ) : isTarget ? (
             <Flag size={14} className={styles.iconTarget} />
+          ) : isFile ? (
+            <File size={14} className={styles.iconFile} />
           ) : (
             <Folder size={14} className={styles.iconFolder} />
           )}
 
-          {/* Name */}
-          <span className={styles.name}>{node.name}</span>
+          <span className={styles.name}>{displayName}</span>
 
-          {/* Status badges */}
           {isCurrent && <MapPin size={10} className={styles.badge} />}
         </div>
       </div>
@@ -117,7 +118,7 @@ function TreeItem({ node, parentPath, depth, currentPath, targetPath, visitedPat
           >
             {node.children.map((child) => (
               <TreeItem
-                key={child.name}
+                key={nodePath + '/' + getDisplayName(child)}
                 node={child}
                 parentPath={nodePath}
                 depth={depth + 1}

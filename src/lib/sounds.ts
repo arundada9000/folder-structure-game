@@ -1,25 +1,29 @@
 /**
  * SOUND EFFECTS
  *
- * Web Audio API synthesized sounds — no external files needed.
+ * Shared AudioContext singleton and standalone sound functions.
+ * Used by both the useAudio hook and components that need direct sound playback.
  */
 
-let audioCtx: AudioContext | null = null;
+export let sharedAudioCtx: AudioContext | null = null;
 
-function getCtx() {
-  if (!audioCtx) {
-    audioCtx = new AudioContext();
+export function getSharedAudioContext(): AudioContext | null {
+  if (!sharedAudioCtx) {
+    try {
+      sharedAudioCtx = new AudioContext();
+    } catch {
+      return null;
+    }
   }
-  return audioCtx;
+  return sharedAudioCtx;
 }
 
-/** Play a happy ascending chime for level completion */
 export function playWinSound() {
   try {
-    const ctx = getCtx();
+    const ctx = getSharedAudioContext();
+    if (!ctx) return;
     const now = ctx.currentTime;
 
-    // Three ascending notes: C5, E5, G5
     const notes = [523.25, 659.25, 783.99];
     const noteLength = 0.15;
 
@@ -41,11 +45,10 @@ export function playWinSound() {
       osc.stop(now + i * noteLength + noteLength + 0.3);
     });
 
-    // Final sparkle chord
     const sparkle = ctx.createOscillator();
     const sparkleGain = ctx.createGain();
     sparkle.type = 'triangle';
-    sparkle.frequency.value = 1046.5; // C6
+    sparkle.frequency.value = 1046.5;
     sparkleGain.gain.setValueAtTime(0, now + notes.length * noteLength);
     sparkleGain.gain.linearRampToValueAtTime(0.2, now + notes.length * noteLength + 0.02);
     sparkleGain.gain.exponentialRampToValueAtTime(0.001, now + notes.length * noteLength + 0.6);
@@ -54,14 +57,14 @@ export function playWinSound() {
     sparkle.start(now + notes.length * noteLength);
     sparkle.stop(now + notes.length * noteLength + 0.7);
   } catch {
-    // Audio not available — fail silently
+    /* Audio not available — fail silently */
   }
 }
 
-/** Play a sad descending tone for loss */
 export function playLoseSound() {
   try {
-    const ctx = getCtx();
+    const ctx = getSharedAudioContext();
+    if (!ctx) return;
     const now = ctx.currentTime;
 
     const osc = ctx.createOscillator();
@@ -76,6 +79,6 @@ export function playLoseSound() {
     osc.start(now);
     osc.stop(now + 0.7);
   } catch {
-    // Audio not available — fail silently
+    /* Audio not available — fail silently */
   }
 }

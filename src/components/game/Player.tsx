@@ -87,6 +87,7 @@ export default function Player({ targetPath, boardRef, celebrating }: PlayerProp
       {avatar === 'ghost' && <Ghost size={22} />}
       {avatar === 'rocket' && <Rocket size={22} />}
       {avatar.startsWith('data:image') && (
+        // eslint-disable-next-line @next/next/no-img-element
         <img src={avatar} alt="Player" style={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover' }} />
       )}
       {avatar !== 'bot' && avatar !== 'ghost' && avatar !== 'rocket' && !avatar.startsWith('data:image') && (

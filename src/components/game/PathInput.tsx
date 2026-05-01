@@ -12,9 +12,9 @@
 
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Terminal, ArrowRight, CornerDownLeft, ChevronRight, Folder } from 'lucide-react';
+import { Terminal, ArrowRight, CornerDownLeft, Folder } from 'lucide-react';
 import type { TreeNode } from '@/types';
-import { resolvePath, getNodeByPath } from '@/lib/pathParser';
+import { resolvePath, getNodeByPath, getDisplayName } from '@/lib/pathParser';
 import { getParentPath } from '@/lib/treeUtils';
 import styles from './PathInput.module.css';
 
@@ -36,10 +36,9 @@ function getSuggestions(tree: TreeNode, currentPath: string, input: string): str
   if (!tree || !currentPath) return [];
   const trimmed = input;
   if (!trimmed) {
-    /* Empty input: show children of current node + '..' */
     const node = getNodeByPath(tree, currentPath);
     if (!node) return [];
-    const names = node.children.map((c) => c.name);
+    const names = node.children.map((c) => getDisplayName(c));
     if (getParentPath(currentPath)) names.unshift('..');
     return names;
   }
@@ -49,15 +48,12 @@ function getSuggestions(tree: TreeNode, currentPath: string, input: string): str
   let prefix: string;
 
   if (lastSlashIdx === -1) {
-    /* No slash — filter children of current dir */
     resolvedDirPath = currentPath;
     prefix = trimmed;
   } else if (trimmed.startsWith('/') && lastSlashIdx === 0) {
-    /* Just "/" — suggest root name */
     resolvedDirPath = `/${tree.name}`;
     prefix = trimmed.substring(1);
   } else {
-    /* Has slash — resolve path up to last slash */
     const dirPart = trimmed.substring(0, lastSlashIdx);
     prefix = trimmed.substring(lastSlashIdx + 1);
     if (!dirPart || dirPart === '.') {
@@ -73,10 +69,9 @@ function getSuggestions(tree: TreeNode, currentPath: string, input: string): str
   if (!node) return [];
 
   const suggestions = node.children
-    .map((c) => c.name)
+    .map((c) => getDisplayName(c))
     .filter((name) => name.toLowerCase().startsWith(prefix.toLowerCase()));
 
-  /* Add '..' if it matches the prefix and we are not at root */
   if (getParentPath(resolvedDirPath) && '..'.startsWith(prefix)) {
     suggestions.unshift('..');
   }
@@ -104,8 +99,6 @@ export default function PathInput({
   hasError,
 }: PathInputProps) {
   const [value, setValue] = useState('');
-  const [shaking, setShaking] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState(-1);
   const [history, setHistory] = useState<string[]>([]);
   const [historyIdx, setHistoryIdx] = useState(-1);
@@ -117,20 +110,7 @@ export default function PathInput({
     return getSuggestions(tree, currentPath, value);
   }, [tree, currentPath, value, disabled]);
 
-  /* Show/hide dropdown */
-  useEffect(() => {
-    setShowSuggestions(suggestions.length > 0);
-    setSelectedIdx(-1);
-  }, [suggestions]);
-
-  /* Shake on error */
-  useEffect(() => {
-    if (hasError) {
-      setShaking(true);
-      const t = setTimeout(() => setShaking(false), 500);
-      return () => clearTimeout(t);
-    }
-  }, [hasError]);
+  const showSuggestions = !disabled && suggestions.length > 0 && !hasError;
 
   /* Auto-focus */
   useEffect(() => {
@@ -145,13 +125,11 @@ export default function PathInput({
     setHistoryIdx(-1);
     onSubmit(trimmed);
     setValue('');
-    setShowSuggestions(false);
   }
 
   function handleSelectSuggestion(suggestion: string) {
     const newVal = applySuggestion(value, suggestion);
     setValue(newVal);
-    setShowSuggestions(false);
     inputRef.current?.focus();
   }
 
@@ -177,7 +155,7 @@ export default function PathInput({
         return;
       }
       if (e.key === 'Escape') {
-        setShowSuggestions(false);
+        setSelectedIdx(-1);
         return;
       }
       /* Enter on a selected suggestion → apply it instead of submitting */
@@ -216,7 +194,7 @@ export default function PathInput({
       <motion.form
         className={styles.form}
         onSubmit={handleSubmit}
-        animate={shaking ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
+        animate={hasError ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
         transition={{ duration: 0.4 }}
       >
         {/* Current path prompt */}
@@ -239,8 +217,8 @@ export default function PathInput({
               onPreview?.(e.target.value);
             }}
             onKeyDown={handleKeyDown}
-            onFocus={() => value.length === 0 && setShowSuggestions(suggestions.length > 0)}
-            onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+            onFocus={() => {}}
+            onBlur={() => {}}
             placeholder="Type a path... (Tab to autocomplete)"
             disabled={disabled}
             autoComplete="off"

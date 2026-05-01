@@ -6,46 +6,48 @@
  * Top bar showing level info, move counter, target folder, and controls.
  */
 
-import { motion } from 'framer-motion';
-import { Target, Footprints, Map, RotateCcw, ArrowLeft, Lock, Eye, TreePine, Code2 } from 'lucide-react';
+import { Target, Footprints, RotateCcw, ArrowLeft, Lock, Eye, TreePine, Code2, Undo2, Lightbulb } from 'lucide-react';
 import AvatarPicker from './AvatarPicker';
 import styles from './HUD.module.css';
 
 interface HUDProps {
   levelName: string;
   levelId: number;
-  currentPath: string;
   targetPath: string;
   moveCount: number;
   maxMoves: number | null;
   allowAbsolute: boolean;
   hiddenMode: boolean;
   viewMode: 'tree' | 'code';
+  canUndo: boolean;
   onToggleView: () => void;
   onReset: () => void;
   onBack: () => void;
+  onUndo: () => void;
+  onHint: () => void;
 }
 
 export default function HUD({
   levelName,
   levelId,
-  currentPath,
   targetPath,
   moveCount,
   maxMoves,
   allowAbsolute,
   hiddenMode,
   viewMode,
+  canUndo,
   onToggleView,
   onReset,
   onBack,
+  onUndo,
+  onHint,
 }: HUDProps) {
   const movesRemaining = maxMoves !== null ? maxMoves - moveCount : null;
   const isLowMoves = movesRemaining !== null && movesRemaining <= 2;
 
   return (
     <div className={styles.hud}>
-      {/* Left: back + level info */}
       <div className={styles.left}>
         <button className={styles.iconBtn} onClick={onBack} aria-label="Back to home" title="Back to home">
           <ArrowLeft size={16} /> Home
@@ -56,7 +58,6 @@ export default function HUD({
         </div>
       </div>
 
-      {/* Center: target + constraints */}
       <div className={styles.center}>
         <div className={styles.stat}>
           <Target size={14} className={styles.statIconTarget} />
@@ -80,7 +81,6 @@ export default function HUD({
         </div>
       </div>
 
-      {/* Right: moves + avatar + reset */}
       <div className={styles.right}>
         <div className={`${styles.moveStat} ${isLowMoves ? styles.moveStatLow : ''}`}>
           <Footprints size={14} />
@@ -89,6 +89,18 @@ export default function HUD({
             {maxMoves !== null && ` / ${maxMoves}`}
           </span>
         </div>
+        <button
+          className={`${styles.iconBtn} ${!canUndo ? styles.iconBtnDisabled : ''}`}
+          onClick={onUndo}
+          disabled={!canUndo}
+          aria-label="Undo last move"
+          title="Undo last move"
+        >
+          <Undo2 size={16} />
+        </button>
+        <button className={styles.iconBtn} onClick={onHint} aria-label="Get a hint" title="Get a hint">
+          <Lightbulb size={16} />
+        </button>
         <AvatarPicker />
         <button className={styles.iconBtn} onClick={onToggleView} aria-label="Toggle view" title={viewMode === 'tree' ? 'Switch to Code View' : 'Switch to Tree View'}>
           {viewMode === 'tree' ? <Code2 size={16} /> : <TreePine size={16} />}

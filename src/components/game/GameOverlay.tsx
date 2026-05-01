@@ -26,6 +26,7 @@ interface GameOverlayProps {
   onNextLevel: () => void;
   onBack: () => void;
   hasNextLevel: boolean;
+  bestScore?: number;
 }
 
 function AvatarIcon({ avatar, size }: { avatar: string; size: number }) {
@@ -33,6 +34,7 @@ function AvatarIcon({ avatar, size }: { avatar: string; size: number }) {
   if (avatar === 'ghost') return <Ghost size={size} />;
   if (avatar === 'rocket') return <Rocket size={size} />;
   if (avatar.startsWith('data:image')) {
+    // eslint-disable-next-line @next/next/no-img-element
     return <img src={avatar} alt="Avatar" style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover' }} />;
   }
   return <UserCircle2 size={size} />;
@@ -45,6 +47,7 @@ export default function GameOverlay({
   onNextLevel,
   onBack,
   hasNextLevel,
+  bestScore,
 }: GameOverlayProps) {
   const isVisible = status === 'won' || status === 'lost';
   const { avatar } = useAvatar();
@@ -136,6 +139,9 @@ export default function GameOverlay({
                   transition={{ delay: 0.5 }}
                 >
                   Navigated in <strong>{moveCount}</strong> move{moveCount !== 1 ? 's' : ''}
+                  {bestScore !== undefined && moveCount <= bestScore && (
+                    <span className={styles.newBest}> New Best!</span>
+                  )}
                 </motion.p>
 
                 {/* Stars rating based on moves */}

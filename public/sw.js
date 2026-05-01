@@ -1,6 +1,4 @@
-const CACHE_NAME = 'pathpilot-v1';
-
-self.addEventListener('install', (event) => {
+self.addEventListener('install', () => {
   self.skipWaiting();
 });
 
@@ -9,6 +7,5 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // A simple pass-through fetch to satisfy PWA installability requirements
   event.respondWith(fetch(event.request));
 });

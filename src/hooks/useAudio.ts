@@ -1,27 +1,28 @@
 'use client';
 
 import { useCallback, useRef, useEffect } from 'react';
+import { getSharedAudioContext } from '@/lib/sounds';
 
 /**
  * USE AUDIO
  *
- * Simple Web Audio API synthesizer for retro/arcade sound effects.
+ * Web Audio API synthesizer for game sound effects.
+ * Shares a singleton AudioContext with sounds.ts to avoid duplication.
  * No external assets required.
  */
 export function useAudio() {
   const audioCtxRef = useRef<AudioContext | null>(null);
 
   useEffect(() => {
-    // Initialize lazily to respect browser autoplay policies
     const initAudio = () => {
       if (!audioCtxRef.current) {
-        audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+        audioCtxRef.current = getSharedAudioContext();
       }
     };
-    
+
     window.addEventListener('click', initAudio, { once: true });
     window.addEventListener('keydown', initAudio, { once: true });
-    
+
     return () => {
       window.removeEventListener('click', initAudio);
       window.removeEventListener('keydown', initAudio);
@@ -29,7 +30,7 @@ export function useAudio() {
   }, []);
 
   const playTone = useCallback((freq: number, type: OscillatorType, duration: number, vol = 0.1) => {
-    const ctx = audioCtxRef.current;
+    const ctx = audioCtxRef.current ?? getSharedAudioContext();
     if (!ctx) return;
 
     const osc = ctx.createOscillator();
@@ -49,30 +50,40 @@ export function useAudio() {
   }, []);
 
   const playStart = useCallback(() => {
-    // Ascending chime
     playTone(440, 'sine', 0.1, 0.05);
     setTimeout(() => playTone(554, 'sine', 0.1, 0.05), 100);
     setTimeout(() => playTone(659, 'sine', 0.2, 0.05), 200);
   }, [playTone]);
 
   const playMove = useCallback(() => {
-    // Short blip
     playTone(600, 'square', 0.05, 0.02);
   }, [playTone]);
 
   const playError = useCallback(() => {
-    // Low buzz
     playTone(150, 'sawtooth', 0.2, 0.05);
     setTimeout(() => playTone(140, 'sawtooth', 0.3, 0.05), 100);
   }, [playTone]);
 
   const playWin = useCallback(() => {
-    // Triumphant fanfare
-    playTone(523.25, 'triangle', 0.15, 0.08); // C5
-    setTimeout(() => playTone(659.25, 'triangle', 0.15, 0.08), 150); // E5
-    setTimeout(() => playTone(783.99, 'triangle', 0.15, 0.08), 300); // G5
-    setTimeout(() => playTone(1046.50, 'triangle', 0.4, 0.08), 450); // C6
+    playTone(523.25, 'triangle', 0.15, 0.08);
+    setTimeout(() => playTone(659.25, 'triangle', 0.15, 0.08), 150);
+    setTimeout(() => playTone(783.99, 'triangle', 0.15, 0.08), 300);
+    setTimeout(() => playTone(1046.50, 'triangle', 0.4, 0.08), 450);
   }, [playTone]);
 
-  return { playStart, playMove, playError, playWin };
+  const playLose = useCallback(() => {
+    playTone(400, 'sawtooth', 0.5, 0.12);
+  }, [playTone]);
+
+  const playUndo = useCallback(() => {
+    playTone(500, 'sine', 0.08, 0.04);
+    setTimeout(() => playTone(400, 'sine', 0.1, 0.04), 80);
+  }, [playTone]);
+
+  const playHint = useCallback(() => {
+    playTone(800, 'sine', 0.1, 0.03);
+    setTimeout(() => playTone(1000, 'sine', 0.15, 0.03), 100);
+  }, [playTone]);
+
+  return { playStart, playMove, playError, playWin, playLose, playUndo, playHint };
 }
