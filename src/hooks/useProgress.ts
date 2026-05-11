@@ -136,12 +136,6 @@ export function useProgress(): UseProgressReturn {
   }, []);
 
   const recordAttempt = useCallback((levelId: number) => {
-    setStats((prev) => {
-      const next = { ...prev, totalGamesPlayed: prev.totalGamesPlayed + 1 };
-      saveStats(next);
-      return next;
-    });
-
     setProgress((prev) => {
       const next = new Map(prev);
       const existing = next.get(levelId);
