@@ -11,14 +11,37 @@ All built-in levels are defined in `src/lib/levels.ts`.
 Before creating a level, you must understand the two core interfaces defined in `src/types/index.ts`.
 
 ### 1. `TreeNode`
-This represents the folder structure of your level.
+This represents a node (folder or file) in the tree structure of your level.
 ```typescript
 export interface TreeNode {
-  name: string; // The name of the folder (e.g., 'home')
-  children: TreeNode[]; // Sub-folders inside this directory
+  name: string;      // The name of the node (e.g., 'home', 'main')
+  type: "folder" | "file";  // Node type (defaults to "folder")
+  extension?: string; // File extension (e.g., "py", "txt", "pdf") — only for file nodes
+  children: TreeNode[]; // Sub-folders/files inside this node
 }
 ```
-*Note: The root node of the tree is the absolute root path. For example, if the root node is named `"root"`, all absolute paths start with `/root`.*
+*Note:*
+- The root node of the tree is the absolute root path. For example, if the root node is named `"root"`, all absolute paths start with `/root`.
+- If `type` is omitted, the node defaults to a **folder**. Set `type: "file"` for leaf file nodes.
+- File nodes **must** have an empty `children` array (`children: []`).
+- The `extension` field is used for display and path matching (e.g., `"main.py"` instead of just `"main"`).
+
+#### File Node Examples
+
+```typescript
+// A single file node
+{ name: "main", type: "file", extension: "py", children: [] }
+
+// A folder containing files
+{
+  name: "src",
+  type: "folder",
+  children: [
+    { name: "utils", type: "file", extension: "ts", children: [] },
+    { name: "app", type: "file", extension: "js", children: [] },
+  ]
+}
+```
 
 ### 2. `LevelConfig`
 This is the configuration object for your level.
@@ -40,7 +63,7 @@ export interface LevelConfig {
 ## Step 2: Define a `TreeNode` Structure
 Create a clear, logical, or tricky folder structure depending on the difficulty you want to achieve.
 
-Example:
+Example with folders only:
 ```typescript
 const myCustomTree: TreeNode = {
   name: 'server',
@@ -62,12 +85,44 @@ const myCustomTree: TreeNode = {
 };
 ```
 
+Example with files (for levels that include file nodes):
+```typescript
+const myCodebaseTree: TreeNode = {
+  name: 'project',
+  children: [
+    {
+      name: 'src',
+      children: [
+        { name: 'main', type: 'file', extension: 'py', children: [] },
+        { name: 'utils', type: 'file', extension: 'py', children: [] },
+        { name: 'components', children: [] },
+      ]
+    },
+    {
+      name: 'tests',
+      children: [
+        { name: 'test_main', type: 'file', extension: 'py', children: [] },
+      ]
+    },
+    {
+      name: 'docs',
+      children: [
+        { name: 'readme', type: 'file', extension: 'md', children: [] },
+      ]
+    },
+  ]
+};
+```
+
+For this tree, the absolute path to the main Python file would be `/project/src/main.py`.
+
 ## Step 3: Define the `LevelConfig`
 Map the tree to a LevelConfig. 
 
 **Critical Rules for Paths:**
 - `startPath` and `targetPath` **MUST** be valid, existing absolute paths within your `TreeNode` structure.
 - Absolute paths **MUST** start with a forward slash `/` followed by the root node name.
+- For file nodes, the path segment includes the extension (e.g., `/project/src/main.py`).
 - In the example above, the root is `server`. So the path to `nginx` is `/server/logs/nginx`.
 
 Example Level:
