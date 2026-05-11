@@ -28,7 +28,7 @@ import ToastContainer from '@/components/ui/ToastContainer';
 import styles from './page.module.css';
 
 export default function PlayPage() {
-  const { state, visiblePaths, loadLevel, executeMove, previewMove, undoMove, resetLevel } = useGameEngine();
+  const { state, visiblePaths, loadLevel, executeMove, previewMove, undoMove, resetLevel, muted, toggleMute } = useGameEngine();
   const toast = useToast();
   const { recordWin, recordAttempt, recordLoss, getLevelProgress, isLevelCompleted } = useProgress();
 
@@ -203,11 +203,13 @@ export default function PlayPage() {
             hiddenMode={state.level.hiddenMode}
             viewMode={viewMode}
             canUndo={state.status === 'playing' && state.moveCount > 0}
+            muted={muted}
             onToggleView={() => setViewMode((prev) => (prev === 'tree' ? 'code' : 'tree'))}
             onReset={resetLevel}
             onBack={handleBack}
             onUndo={handleUndo}
             onHint={handleHint}
+            onToggleMute={toggleMute}
           />
 
           <div className={styles.gameContent}>

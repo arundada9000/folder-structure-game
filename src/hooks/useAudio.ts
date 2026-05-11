@@ -1,7 +1,17 @@
 'use client';
 
-import { useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { getSharedAudioContext } from '@/lib/sounds';
+
+const MUTED_KEY = 'pathpilot-muted';
+
+function getStoredMuted(): boolean {
+  try {
+    return localStorage.getItem(MUTED_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
 
 /**
  * USE AUDIO
@@ -12,26 +22,23 @@ import { getSharedAudioContext } from '@/lib/sounds';
  */
 export function useAudio() {
   const audioCtxRef = useRef<AudioContext | null>(null);
+  const [muted, setMuted] = useState(getStoredMuted);
+  const mutedRef = useRef(muted);
+  useEffect(() => { mutedRef.current = muted; }, [muted]);
 
-  useEffect(() => {
-    const initAudio = () => {
-      if (!audioCtxRef.current) {
-        audioCtxRef.current = getSharedAudioContext();
-      }
-    };
-
-    window.addEventListener('click', initAudio, { once: true });
-    window.addEventListener('keydown', initAudio, { once: true });
-
-    return () => {
-      window.removeEventListener('click', initAudio);
-      window.removeEventListener('keydown', initAudio);
-    };
+  const toggleMute = useCallback(() => {
+    setMuted((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem(MUTED_KEY, String(next));
+      } catch { /* ignore */ }
+      return next;
+    });
   }, []);
 
   const playTone = useCallback((freq: number, type: OscillatorType, duration: number, vol = 0.1) => {
     const ctx = audioCtxRef.current ?? getSharedAudioContext();
-    if (!ctx) return;
+    if (!ctx || mutedRef.current) return;
 
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
@@ -85,5 +92,5 @@ export function useAudio() {
     setTimeout(() => playTone(1000, 'sine', 0.15, 0.03), 100);
   }, [playTone]);
 
-  return { playStart, playMove, playError, playWin, playLose, playUndo, playHint };
+  return { playStart, playMove, playError, playWin, playLose, playUndo, playHint, muted, toggleMute };
 }

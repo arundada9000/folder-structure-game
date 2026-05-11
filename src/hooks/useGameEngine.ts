@@ -23,10 +23,12 @@ interface UseGameEngineReturn {
   state: GameState;
   visiblePaths: Set<string>;
   loadLevel: (level: LevelConfig) => void;
-  executeMove: (input: string) => { success: boolean; error?: string; reachedTarget?: boolean };
+  executeMove: (input: string) => { success: boolean; error?: string; reachedTarget?: boolean; lost?: boolean };
   previewMove: (input: string) => void;
   undoMove: () => boolean;
   resetLevel: () => void;
+  muted: boolean;
+  toggleMute: () => void;
 }
 
 function createInitialState(level: LevelConfig): GameState {
@@ -71,7 +73,7 @@ export function useGameEngine(): UseGameEngineReturn {
 
   const [moveHistory, setMoveHistory] = useState<HistoryEntry[]>([]);
 
-  const { playStart, playMove, playError, playUndo } = useAudio();
+  const { playStart, playMove, playError, playUndo, muted, toggleMute } = useAudio();
 
   const loadLevel = useCallback((level: LevelConfig) => {
     setState(createInitialState(level));
@@ -201,5 +203,5 @@ export function useGameEngine(): UseGameEngineReturn {
     return getVisiblePaths(state.level.tree, state.displayPath, state.level.visibilityRadius);
   }, [state.level.hiddenMode, state.level.tree, state.displayPath, state.level.visibilityRadius]);
 
-  return { state, visiblePaths, loadLevel, executeMove, previewMove, undoMove, resetLevel };
+  return { state, visiblePaths, loadLevel, executeMove, previewMove, undoMove, resetLevel, muted, toggleMute };
 }

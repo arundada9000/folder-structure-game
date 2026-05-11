@@ -6,7 +6,7 @@
  * Top bar showing level info, move counter, target folder, and controls.
  */
 
-import { Target, Footprints, RotateCcw, ArrowLeft, Lock, Eye, TreePine, Code2, Undo2, Lightbulb } from 'lucide-react';
+import { Target, Footprints, RotateCcw, ArrowLeft, Lock, Eye, TreePine, Code2, Undo2, Lightbulb, Volume2, VolumeX } from 'lucide-react';
 import AvatarPicker from './AvatarPicker';
 import styles from './HUD.module.css';
 
@@ -20,11 +20,13 @@ interface HUDProps {
   hiddenMode: boolean;
   viewMode: 'tree' | 'code';
   canUndo: boolean;
+  muted: boolean;
   onToggleView: () => void;
   onReset: () => void;
   onBack: () => void;
   onUndo: () => void;
   onHint: () => void;
+  onToggleMute: () => void;
 }
 
 export default function HUD({
@@ -37,11 +39,13 @@ export default function HUD({
   hiddenMode,
   viewMode,
   canUndo,
+  muted,
   onToggleView,
   onReset,
   onBack,
   onUndo,
   onHint,
+  onToggleMute,
 }: HUDProps) {
   const movesRemaining = maxMoves !== null ? maxMoves - moveCount : null;
   const isLowMoves = movesRemaining !== null && movesRemaining <= 2;
@@ -100,6 +104,9 @@ export default function HUD({
         </button>
         <button className={styles.iconBtn} onClick={onHint} aria-label="Get a hint" title="Get a hint">
           <Lightbulb size={16} />
+        </button>
+        <button className={styles.iconBtn} onClick={onToggleMute} aria-label={muted ? 'Unmute sounds' : 'Mute sounds'} title={muted ? 'Unmute sounds' : 'Mute sounds'}>
+          {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
         </button>
         <AvatarPicker />
         <button className={styles.iconBtn} onClick={onToggleView} aria-label="Toggle view" title={viewMode === 'tree' ? 'Switch to Code View' : 'Switch to Tree View'}>
