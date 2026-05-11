@@ -109,7 +109,7 @@ export default function RootLayout({
               description:
                 'An interactive puzzle game that teaches file system navigation using relative and absolute paths.',
               url: 'https://learn-folder-structure.vercel.app',
-              author: { '@type': 'Person', name: 'Arun Dada' },
+              author: { '@type': 'Person', name: 'Arun Neupane', email: 'arunneupane0000@gmail.com', telephone: '+9779811420975' },
               offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
             }),
           }}

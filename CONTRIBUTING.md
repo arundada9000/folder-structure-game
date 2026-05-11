@@ -2,6 +2,8 @@
 
 Thank you for considering contributing to PathPilot! This document provides guidelines and instructions for contributing.
 
+**Maintainer:** Arun Neupane — [arunneupane0000@gmail.com](mailto:arunneupane0000@gmail.com) — Nepal
+
 ## Code of Conduct
 
 By participating, you agree to maintain a respectful and inclusive environment for everyone.

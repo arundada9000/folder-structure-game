@@ -2,6 +2,11 @@
   "name": "game",
   "version": "0.1.0",
   "private": true,
+  "author": {
+    "name": "Arun Neupane",
+    "email": "arunneupane0000@gmail.com",
+    "url": "https://learn-folder-structure.vercel.app"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",

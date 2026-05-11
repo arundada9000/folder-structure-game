@@ -269,6 +269,14 @@ User Input → PathInput → resolvePath() → GameEngine → GameState → Game
 
 Contributions are welcome! Please open an issue or submit a pull request.
 
+## Author
+
+**Arun Neupane** — Nepal
+
+- Email: [arunneupane0000@gmail.com](mailto:arunneupane0000@gmail.com)
+- Phone: +977-9811420975
+- GitHub: [@arundada9000](https://github.com/arundada9000)
+
 ## License
 
 MIT — see [LICENSE](LICENSE) for details.
