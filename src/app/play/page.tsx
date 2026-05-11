@@ -7,7 +7,7 @@
  * path input, toast notifications, and overlays.
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import type { LevelConfig, TreeNode } from '@/types';
 import { LEVELS } from '@/lib/levels';
 import { generateRandomTree, getRandomNodePath } from '@/lib/treeUtils';
@@ -36,6 +36,16 @@ export default function PlayPage() {
   const [showUpload, setShowUpload] = useState(false);
   const [inputError, setInputError] = useState(false);
   const [viewMode, setViewMode] = useState<'tree' | 'code'>('tree');
+
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.hidden && state.status === 'playing') {
+        toast.info('Game paused - tab not visible');
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => document.removeEventListener('visibilitychange', handleVisibility);
+  }, [state.status, toast]);
 
   const handleSelectLevel = useCallback(
     (level: LevelConfig) => {

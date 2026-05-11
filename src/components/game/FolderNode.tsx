@@ -63,6 +63,10 @@ export default function FolderNode({
       whileTap={{ scale: 0.95 }}
       layout
       title={path}
+      animate={isTarget && !isCurrent ? {
+        boxShadow: ['0 0 8px var(--color-accent-glow)', '0 0 20px var(--color-accent-glow)', '0 0 8px var(--color-accent-glow)'],
+        transition: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
+      } : {}}
     >
       {isCurrent && (
         <div className={styles.indicator}>
