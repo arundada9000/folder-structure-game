@@ -21,7 +21,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://pathpilot.app'),
+  metadataBase: new URL('https://learn-folder-structure.vercel.app'),
   title: {
     default: 'PathPilot - Learn File Paths Through Interactive Game',
     template: '%s | PathPilot',
@@ -108,7 +108,7 @@ export default function RootLayout({
               operatingSystem: 'Web',
               description:
                 'An interactive puzzle game that teaches file system navigation using relative and absolute paths.',
-              url: 'https://pathpilot.app',
+              url: 'https://learn-folder-structure.vercel.app',
               author: { '@type': 'Person', name: 'Arun Dada' },
               offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
             }),

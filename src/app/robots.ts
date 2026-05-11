@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: '/api/',
     },
-    sitemap: 'https://pathpilot.app/sitemap.xml',
+    sitemap: 'https://learn-folder-structure.vercel.app/sitemap.xml',
   };
 }
