@@ -8,7 +8,7 @@
  */
 
 import { useState, useCallback, useMemo } from 'react';
-import type { GameState, GameStatus, LevelConfig } from '@/types';
+import type { GameState, LevelConfig } from '@/types';
 import { resolvePath } from '@/lib/pathParser';
 import { getVisiblePaths } from '@/lib/treeUtils';
 import { useAudio } from '@/hooks/useAudio';
@@ -43,18 +43,31 @@ function createInitialState(level: LevelConfig): GameState {
   };
 }
 
+const INITIAL_LEVEL: LevelConfig = {
+  id: 0,
+  name: '',
+  description: '',
+  tree: { name: '', type: 'folder', children: [] },
+  startPath: '',
+  targetPath: '',
+  maxMoves: null,
+  allowAbsolute: false,
+  hiddenMode: false,
+  visibilityRadius: 0,
+};
+
 export function useGameEngine(): UseGameEngineReturn {
-  const [state, setState] = useState<GameState>(() => ({
-    level: {} as LevelConfig,
+  const [state, setState] = useState<GameState>({
+    level: INITIAL_LEVEL,
     currentPath: '',
     targetPath: '',
     moveCount: 0,
-    status: 'menu' as GameStatus,
+    status: 'menu',
     pathHistory: [],
     visitedPaths: [],
     isAnimating: false,
     displayPath: '',
-  }));
+  });
 
   const [moveHistory, setMoveHistory] = useState<HistoryEntry[]>([]);
 
