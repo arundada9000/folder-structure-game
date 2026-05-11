@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState, useMemo } from 'react';
 import styles from './Confetti.module.css';
 
 const COLORS = ['#00f0ff', '#ff0055', '#a855f7', '#10b981', '#f59e0b', '#3b82f6', '#ec4899'];
@@ -15,8 +15,6 @@ interface ParticleConfig {
   rotation: number;
   drift: number;
 }
-
-let nextSeed = 0;
 
 function seededRandom(seed: number): () => number {
   let s = seed;
@@ -40,7 +38,8 @@ function generateParticles(seed: number): ParticleConfig[] {
 }
 
 export default function Confetti() {
-  const particles = useState(() => generateParticles(nextSeed++))[0];
+  const [seed] = useState(() => Date.now());
+  const particles = useMemo(() => generateParticles(seed), [seed]);
 
   const rendered = useMemo(() => {
     return particles.map((p, i) => (
