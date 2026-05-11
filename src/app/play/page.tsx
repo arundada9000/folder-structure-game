@@ -181,6 +181,7 @@ export default function PlayPage() {
   return (
     <ErrorBoundary>
     <div className={styles.page}>
+      <h1 className="sr-only">PathPilot - Play Game</h1>
       {showMenu ? (
         <LevelSelector
           levels={LEVELS}

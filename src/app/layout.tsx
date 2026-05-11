@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
+import Script from 'next/script';
 import PwaInit from '@/components/PwaInit';
 import './globals.css';
 
@@ -22,8 +23,11 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://pathpilot.app'), // Replace with actual domain when deployed
-  title: 'PathPilot - Learn File Paths Through Interactive Game',
+  metadataBase: new URL('https://pathpilot.app'),
+  title: {
+    default: 'PathPilot - Learn File Paths Through Interactive Game',
+    template: '%s | PathPilot',
+  },
   description:
     'Master file system navigation with PathPilot, an interactive puzzle game that teaches relative and absolute paths through visual tree exploration.',
   keywords: [
@@ -33,7 +37,14 @@ export const metadata: Metadata = {
     'file navigation game',
     'terminal path trainer',
     'command line practice',
+    'directory navigation',
+    'cd command practice',
+    'file tree puzzle',
+    'linux terminal game',
   ],
+  alternates: {
+    canonical: '/',
+  },
   icons: {
     icon: [
       { url: '/favicon.ico' },
@@ -86,6 +97,25 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <PwaInit />
         {children}
+
+        <Script
+          id="schema-structured-data"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebApplication',
+              name: 'PathPilot',
+              applicationCategory: 'EducationalApplication',
+              operatingSystem: 'Web',
+              description:
+                'An interactive puzzle game that teaches file system navigation using relative and absolute paths.',
+              url: 'https://pathpilot.app',
+              author: { '@type': 'Person', name: 'Arun Dada' },
+              offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+            }),
+          }}
+        />
       </body>
     </html>
   );
