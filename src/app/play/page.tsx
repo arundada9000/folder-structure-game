@@ -30,7 +30,7 @@ import styles from './page.module.css';
 export default function PlayPage() {
   const { state, visiblePaths, loadLevel, executeMove, previewMove, undoMove, resetLevel } = useGameEngine();
   const toast = useToast();
-  const { recordWin, recordAttempt, getLevelProgress, isLevelCompleted } = useProgress();
+  const { recordWin, recordAttempt, recordLoss, getLevelProgress, isLevelCompleted } = useProgress();
 
   const [showMenu, setShowMenu] = useState(true);
   const [showUpload, setShowUpload] = useState(false);
@@ -77,6 +77,10 @@ export default function PlayPage() {
         return;
       }
 
+      if (result.lost) {
+        recordLoss();
+      }
+
       if (
         state.level.maxMoves !== null &&
         state.level.maxMoves - (state.moveCount + 1) <= 2 &&
@@ -85,7 +89,7 @@ export default function PlayPage() {
         toast.warning(`Only ${state.level.maxMoves - state.moveCount - 1} moves remaining`);
       }
     },
-    [executeMove, state.level, state.moveCount, toast, recordWin]
+    [executeMove, state.level, state.moveCount, toast, recordWin, recordLoss]
   );
 
   const isWon = state.status === 'won';

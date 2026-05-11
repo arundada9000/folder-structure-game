@@ -76,7 +76,7 @@ export function useGameEngine(): UseGameEngineReturn {
   }, [playStart]);
 
   const executeMove = useCallback(
-    (input: string): { success: boolean; error?: string; reachedTarget?: boolean } => {
+    (input: string): { success: boolean; error?: string; reachedTarget?: boolean; lost?: boolean } => {
       if (state.status !== 'playing') {
         return { success: false, error: 'Game is not active' };
       }
@@ -137,7 +137,7 @@ export function useGameEngine(): UseGameEngineReturn {
         isAnimating: false,
       }));
 
-      return { success: true, reachedTarget };
+      return { success: true, reachedTarget, lost: outOfMoves };
     },
     [state.status, state.level, state.moveCount, state.currentPath, state.visitedPaths, state.targetPath, playError, playMove]
   );
