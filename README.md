@@ -1,6 +1,6 @@
 # PathPilot
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-Custom%20Non--Commercial-blue.svg)](LICENSE)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
 
@@ -279,4 +279,6 @@ Contributions are welcome! Please open an issue or submit a pull request.
 
 ## License
 
-MIT — see [LICENSE](LICENSE) for details.
+Custom Non-Commercial Educational License — see [LICENSE](LICENSE) for details.
+
+This software is for educational and personal learning purposes only. Commercial use, public deployment, or any revenue-generating use requires explicit written permission from the author.

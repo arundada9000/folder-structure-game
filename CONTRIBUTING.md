@@ -4,6 +4,8 @@ Thank you for considering contributing to PathPilot! This document provides guid
 
 **Maintainer:** Arun Neupane — [arunneupane0000@gmail.com](mailto:arunneupane0000@gmail.com) — Nepal
 
+**Important:** This project uses a Custom Non-Commercial Educational License. By contributing, you agree that your contributions will be licensed under the same terms. Commercial use requires explicit permission from the author.
+
 ## Code of Conduct
 
 By participating, you agree to maintain a respectful and inclusive environment for everyone.
