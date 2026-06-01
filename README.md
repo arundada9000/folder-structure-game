@@ -1,10 +1,10 @@
-# PathPilot
+﻿# PathPilot
 
 [![License](https://img.shields.io/badge/License-Custom%20Non--Commercial-blue.svg)](LICENSE)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
 
-An interactive, web-based educational game that teaches file system navigation using relative and absolute paths. Navigate visual folder trees by entering path commands — a mix between a puzzle game and a navigation simulator.
+An interactive, web-based educational game that teaches file system navigation using relative and absolute paths. Navigate visual folder trees by entering path commands - a mix between a puzzle game and a navigation simulator.
 
 **[Report a Bug](https://github.com/arundada9000/folder-structure-game/issues)**
 
@@ -12,27 +12,27 @@ An interactive, web-based educational game that teaches file system navigation u
 
 ## Features
 
-- **Visual File Tree** — Interactive tree with animated nodes, connecting lines, and folder/file icons
-- **Path Commands** — Type real path commands (`../folder`, `/root/src`) to move an avatar between folders
-- **24 Handcrafted Levels** — Progressive difficulty across multiple mechanics:
+- **Visual File Tree** - Interactive tree with animated nodes, connecting lines, and folder/file icons
+- **Path Commands** - Type real path commands (`../folder`, `/root/src`) to move an avatar between folders
+- **24 Handcrafted Levels** - Progressive difficulty across multiple mechanics:
   - Fog of war (hidden tree exploration)
   - Move limits (plan your route carefully)
   - Relative-only mode (no absolute paths)
   - File nodes with extensions
-- **4+ Thematic Endgame Levels** — Labyrinth, AI Core, Time Capsule, Vault Heist
-- **Random Level Generator** — Infinite procedurally generated trees
-- **Custom Tree Upload** — Import your own folder structure as JSON
-- **Animated Avatar** — Smooth spring-physics movement; choose from Bot, Ghost, Rocket, or upload a custom image
-- **Hint System** — Get a hint for the next optimal move
-- **Undo Moves** — Step back through your path history
-- **Star Ratings** — 1–3 stars based on move efficiency
-- **Achievements** — Unlockable badges for milestones (First Steps, Speedrunner, Explorer, etc.)
-- **Sound Effects** — Synthesized Web Audio API sounds for moves, errors, wins, and losses
-- **Toast Notifications** — Real-time feedback for valid moves, errors, warnings, and hints
-- **VS Code Sidebar View** — Toggle between tree and code-explorer view
-- **PWA Support** — Install as a standalone app with offline-capable service worker
-- **Responsive Design** — Works on mobile, tablet, and desktop
-- **Accessibility** — Keyboard-friendly input, ARIA labels, focus states, high contrast
+- **4+ Thematic Endgame Levels** - Labyrinth, AI Core, Time Capsule, Vault Heist
+- **Random Level Generator** - Infinite procedurally generated trees
+- **Custom Tree Upload** - Import your own folder structure as JSON
+- **Animated Avatar** - Smooth spring-physics movement; choose from Bot, Ghost, Rocket, or upload a custom image
+- **Hint System** - Get a hint for the next optimal move
+- **Undo Moves** - Step back through your path history
+- **Star Ratings** - 1-3 stars based on move efficiency
+- **Achievements** - Unlockable badges for milestones (First Steps, Speedrunner, Explorer, etc.)
+- **Sound Effects** - Synthesized Web Audio API sounds for moves, errors, wins, and losses
+- **Toast Notifications** - Real-time feedback for valid moves, errors, warnings, and hints
+- **VS Code Sidebar View** - Toggle between tree and code-explorer view
+- **PWA Support** - Install as a standalone app with offline-capable service worker
+- **Responsive Design** - Works on mobile, tablet, and desktop
+- **Accessibility** - Keyboard-friendly input, ARIA labels, focus states, high contrast
 
 ## Tech Stack
 
@@ -78,15 +78,15 @@ npm start
 
 ## How to Play
 
-1. **Select a Level** — Choose from 24 built-in levels, upload a custom tree, or generate a random one
-2. **Read the Target** — The HUD shows your current position and target folder/file
-3. **Enter a Path** — Type a path command in the terminal input:
-   - `../folder` — Go up one level, then into "folder"
-   - `../../docs` — Go up two levels, then into "docs"
-   - `/root/src/app` — Navigate using an absolute path (if allowed)
-   - `.` — Current directory (no movement)
-4. **Watch the Avatar Move** — Your character animates through each folder
-5. **Reach the Target** — Navigate to the highlighted target folder to win
+1. **Select a Level** - Choose from 24 built-in levels, upload a custom tree, or generate a random one
+2. **Read the Target** - The HUD shows your current position and target folder/file
+3. **Enter a Path** - Type a path command in the terminal input:
+   - `../folder` - Go up one level, then into "folder"
+   - `../../docs` - Go up two levels, then into "docs"
+   - `/root/src/app` - Navigate using an absolute path (if allowed)
+   - `.` - Current directory (no movement)
+4. **Watch the Avatar Move** - Your character animates through each folder
+5. **Reach the Target** - Navigate to the highlighted target folder to win
 
 ### Path Syntax
 
@@ -211,10 +211,10 @@ User Input → PathInput → resolvePath() → GameEngine → GameState → Game
 
 ### Key Modules
 
-- **`pathParser.ts`** — Core path resolution: handles absolute (`/root/foo`), relative (`../foo`), `.`, and `..` traversal. Returns step-by-step results for animation.
-- **`useGameEngine.ts`** — Central state manager: level lifecycle, move execution, undo, win/loss detection, fog-of-war visibility.
-- **`treeUtils.ts`** — Tree utilities: random generation with configurable depth/branching, fog-of-war visible path calculation, node counting.
-- **`hints.ts`** — BFS-based shortest path algorithm that calculates the optimal route from current position to target.
+- **`pathParser.ts`** - Core path resolution: handles absolute (`/root/foo`), relative (`../foo`), `.`, and `..` traversal. Returns step-by-step results for animation.
+- **`useGameEngine.ts`** - Central state manager: level lifecycle, move execution, undo, win/loss detection, fog-of-war visibility.
+- **`treeUtils.ts`** - Tree utilities: random generation with configurable depth/branching, fog-of-war visible path calculation, node counting.
+- **`hints.ts`** - BFS-based shortest path algorithm that calculates the optimal route from current position to target.
 
 ## Scripts
 
@@ -271,7 +271,7 @@ Contributions are welcome! Please open an issue or submit a pull request.
 
 ## Author
 
-**Arun Neupane** — Nepal
+**Arun Neupane** - Nepal
 
 - Email: [arunneupane0000@gmail.com](mailto:arunneupane0000@gmail.com)
 - Phone: +977-9811420975
@@ -279,6 +279,6 @@ Contributions are welcome! Please open an issue or submit a pull request.
 
 ## License
 
-Custom Non-Commercial Educational License — see [LICENSE](LICENSE) for details.
+Custom Non-Commercial Educational License - see [LICENSE](LICENSE) for details.
 
 This software is for educational and personal learning purposes only. Commercial use, public deployment, or any revenue-generating use requires explicit written permission from the author.
